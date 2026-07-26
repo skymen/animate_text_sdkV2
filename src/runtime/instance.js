@@ -2,7 +2,7 @@ import { id, addonType } from "../../config.caw.js";
 import AddonTypeMap from "../../template/addonTypeMap.js";
 import { easingNames } from "../acesShared.js";
 import { getEasingFunction } from "./easings.js";
-import { lerp, unlerp, SFDXUtilsFunctions } from "./utils.js";
+import { lerp, unlerp, rgb255ToHex, SFDXUtilsFunctions } from "./utils.js";
 import * as internals from "./engineInternals.js";
 
 const DEFAULT_ALIASES = [
@@ -40,13 +40,10 @@ const SFDX_TAG_ALIASES = [
   "animtext",
 ];
 
+// Construct hands out colours as 0-1 components; the tags want hex.
 function rgbToHex(rgb) {
   if (!rgb) return "#000000";
-  const toByte = (v) => {
-    const n = Math.max(0, Math.min(255, Math.round(v * 255)));
-    return n.toString(16).padStart(2, "0");
-  };
-  return "#" + toByte(rgb[0]) + toByte(rgb[1]) + toByte(rgb[2]);
+  return rgb255ToHex([rgb[0] * 255, rgb[1] * 255, rgb[2] * 255]);
 }
 
 export default function (parentClass) {
@@ -864,6 +861,18 @@ export default function (parentClass) {
         }
         regex.lastIndex = 0;
       }
+
+      // A solo tag with no body renders nothing, because the tag is only
+      // emitted alongside a character. Give it the same zero width placeholder
+      // the literal [icon=x] form above expands to, so both spellings behave
+      // the same and the typewriter has a character to reveal it with.
+      text = text.replace(
+        new RegExp(
+          "\\[sfdx=(" + SOLO_TAGS.join("|") + ")(\\s[^\\]]*)?\\]\\[/sfdx\\]",
+          "gi"
+        ),
+        "[sfdx=$1$2][sfdx=scale 0] [/sfdx][/sfdx]"
+      );
 
       this.text = text;
 

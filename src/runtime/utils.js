@@ -72,31 +72,61 @@ export function hslToRgb(hue, saturation, lightness) {
   return [Math.round(red * 255), Math.round(green * 255), Math.round(blue * 255)];
 }
 
+// Browsers stopped accepting unitless values in the comma form of hsl(), so the
+// same colour can now be written hsl(0,100%,50%) or hsl(0 100% 50%) or, in older
+// content, hsl(0,100,50). Accept all of them rather than only the old one.
+function splitColorComponents(color) {
+  return color
+    .slice(color.indexOf("(") + 1, color.lastIndexOf(")"))
+    .replace(/\//g, " ")
+    .split(/[\s,]+/)
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
+
+function parsePercentComponent(value) {
+  return parseFloat(value) / 100;
+}
+
+function parseChannelComponent(value) {
+  if (String(value).endsWith("%")) return Math.round((parseFloat(value) * 255) / 100);
+  return parseInt(value, 10);
+}
+
+export function rgb255ToHex(rgb) {
+  return (
+    "#" +
+    rgb
+      .map((c) => {
+        const n = Math.max(0, Math.min(255, Math.round(c)));
+        return n.toString(16).padStart(2, "0");
+      })
+      .join("")
+  );
+}
+
 export function colorToHex(color) {
+  if (typeof color !== "string") return color;
+  color = color.trim();
   if (color.startsWith("#")) {
     return color;
   }
-  if (color.startsWith("hsl")) {
-    let [h, s, l] = color
-      .split("(")[1]
-      .split(")")[0]
-      .split(",")
-      .map((x) => {
-        return x.trim();
-      });
-    color = "rgb(" + hslToRgb(h, s / 100, l / 100).join(",") + ")";
+  const lower = color.toLowerCase();
+  if (lower.startsWith("hsl")) {
+    const [h, s, l] = splitColorComponents(color);
+    return rgb255ToHex(
+      hslToRgb(parseFloat(h), parsePercentComponent(s), parsePercentComponent(l))
+    );
   }
-  if (color.startsWith("rgb")) {
-    let [r, g, b] = color
-      .split("(")[1]
-      .split(")")[0]
-      .split(",")
-      .map((x) => {
-        x = parseInt(x.trim()).toString(16);
-        return x.length == 1 ? "0" + x : x;
-      });
-    return "#" + r + g + b;
+  if (lower.startsWith("rgb")) {
+    const [r, g, b] = splitColorComponents(color);
+    return rgb255ToHex([
+      parseChannelComponent(r),
+      parseChannelComponent(g),
+      parseChannelComponent(b),
+    ]);
   }
+  return color;
 }
 
 export function lerpHexColor(a, b, amount) {
