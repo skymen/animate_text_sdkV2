@@ -183,8 +183,20 @@ export function getCustomEase(name) {
   return match ? Ease.GetRuntimeEase(match) : null;
 }
 
+// Resolving an easing scans the whole ease registry by name. The typewriter asks
+// for it once per tag per character per frame, so the answer is memoised. The
+// registry is filled while the project loads and does not change after that.
+const resolvedEasings = new Map();
+
 export function getEasingFunction(name) {
+  const cached = resolvedEasings.get(name);
+  if (cached) return cached;
+
   const custom = getCustomEase(name);
-  if (custom) return (pos) => custom(pos, 0, 1, 1.01);
-  return EasingFunctions[name] || EasingFunctions.linear;
+  const fn = custom
+    ? (pos) => custom(pos, 0, 1, 1.01)
+    : EasingFunctions[name] || EasingFunctions.linear;
+
+  resolvedEasings.set(name, fn);
+  return fn;
 }

@@ -30,6 +30,8 @@ const DEFAULT_ALIASES = [
 
 const CONDITIONAL_TAGS = ["hide", "b", "i", "u", "s", "stroke"];
 const SOLO_TAGS = ["icon"];
+// Typewriter timing keys. They drive the reveal and are never written out as tags.
+const TIMING_TAGS = ["wait", "fade", "type", "pause"];
 const FRAGMENT_WORTH = { icon: 1 };
 const SFDX_TAG_ALIASES = [
   "sfdx",
@@ -39,6 +41,12 @@ const SFDX_TAG_ALIASES = [
   "animate",
   "animtext",
 ];
+
+// Case insensitive comparison at an offset, without copying the rest of the
+// string the way substring(i).toLowerCase() does on every character.
+function matchesAt(text, index, token) {
+  return text.slice(index, index + token.length).toLowerCase() === token;
+}
 
 // Construct hands out colours as 0-1 components; the tags want hex.
 function rgbToHex(rgb) {
@@ -307,7 +315,8 @@ export default function (parentClass) {
       var word = false;
 
       if (this.typewriterActive) {
-        let id = 0;
+        let charIndex = 0;
+        const easingFunction = this.GetTwEasingFunction();
         this.parsedText.forEach((el) => {
           for (let i = 0; i < el[1].length; i++) {
             let tags = {};
@@ -318,35 +327,41 @@ export default function (parentClass) {
             });
 
             if (
-              this.TWTime >= this.TWData.start[id][0] &&
-              Object.prototype.hasOwnProperty.call(this.TWData.data[id], "pause")
+              this.TWTime >= this.TWData.start[charIndex][0] &&
+              Object.prototype.hasOwnProperty.call(
+                this.TWData.data[charIndex],
+                "pause"
+              )
             ) {
               this.typewriterPaused = true;
-              delete this.TWData.data[id].pause;
+              delete this.TWData.data[charIndex].pause;
               this._trigger("onTwPause");
             }
             if (
-              this.TWTime >= this.TWData.start[id][0] &&
-              Object.prototype.hasOwnProperty.call(this.TWData.data[id], "fn")
+              this.TWTime >= this.TWData.start[charIndex][0] &&
+              Object.prototype.hasOwnProperty.call(
+                this.TWData.data[charIndex],
+                "fn"
+              )
             ) {
-              let fnData = this.TWData.data[id].fn.split(" ");
+              let fnData = this.TWData.data[charIndex].fn.split(" ");
               let fnName = fnData.shift();
               let fnParams = JSON.parse("[" + fnData.join(" ") + "]") || [];
               this.callProjectFunction(fnName, fnParams);
-              delete this.TWData.data[id].fn;
+              delete this.TWData.data[charIndex].fn;
             }
 
-            Object.keys(this.TWData.data[id]).forEach((tag) => {
+            Object.keys(this.TWData.data[charIndex]).forEach((tag) => {
               if (!Object.prototype.hasOwnProperty.call(tags, tag)) {
                 tags[tag] = this.getDefault(tag);
               }
               tags[tag] = lerp(
-                this.TWData.data[id][tag],
+                this.TWData.data[charIndex][tag],
                 tags[tag],
-                this.GetTwEasingFunction()(
+                easingFunction(
                   unlerp(
-                    this.TWData.start[id][0],
-                    this.TWData.start[id][1],
+                    this.TWData.start[charIndex][0],
+                    this.TWData.start[charIndex][1],
                     this.TWTime,
                     true
                   )
@@ -363,7 +378,7 @@ export default function (parentClass) {
               );
             });
             tagKeys.forEach((tag) => {
-              if (!["wait", "fade", "type", "pause"].includes(tag)) {
+              if (!TIMING_TAGS.includes(tag)) {
                 if (!this.IsConditionalTag(tag) || tags[tag]) {
                   str += "[" + tag + "=" + tags[tag] + "]";
                   end = "[/" + tag + "]" + end;
@@ -383,11 +398,11 @@ export default function (parentClass) {
 
             if (
               !this.typewriterPaused &&
-              this.TWTime >= this.TWData.start[id][0] &&
-              this.LastLetterID < id
+              this.TWTime >= this.TWData.start[charIndex][0] &&
+              this.LastLetterID < charIndex
             ) {
-              this.LastLetterID = id;
-              this.LastLetter = this.getTextWithNoTags(str)[id];
+              this.LastLetterID = charIndex;
+              this.LastLetter = this.getTextWithNoTags(str)[charIndex];
               this._trigger("onLetterTyped");
               word = true;
               this.curTypedWidth = str;
@@ -398,7 +413,7 @@ export default function (parentClass) {
               if (el[1][i] === " ") word = false;
             }
 
-            id++;
+            charIndex++;
           }
         });
 
@@ -891,26 +906,26 @@ export default function (parentClass) {
             currentTag[stack - 1] += text[i];
           }
         } else {
-          if (text.substring(i).toLowerCase().startsWith("[sfdx=")) {
-            push(JSON.parse(JSON.stringify(currentTag)), currentText);
+          if (matchesAt(text, i, "[sfdx=")) {
+            push(currentTag.slice(), currentText);
             stack++;
             currentTag.push("");
             tagParam = true;
             i += 5;
-          } else if (text.substring(i).toLowerCase().startsWith("[/sfdx]")) {
+          } else if (matchesAt(text, i, "[/sfdx]")) {
             // Guards against closing sfdx tags that were never opened
             if (stack > 0) {
               stack--;
-              push(JSON.parse(JSON.stringify(currentTag)), currentText);
+              push(currentTag.slice(), currentText);
               currentTag.pop();
               currentText = "";
             }
             i += 6;
-          } else if (text.substring(i).toLowerCase().startsWith("[text=")) {
-            push(JSON.parse(JSON.stringify(currentTag)), currentText);
+          } else if (matchesAt(text, i, "[text=")) {
+            push(currentTag.slice(), currentText);
             currentText = "";
             i += 6;
-            while (text[i] !== "]") {
+            while (i < text.length && text[i] !== "]") {
               currentText += text[i];
               i++;
             }
@@ -921,13 +936,13 @@ export default function (parentClass) {
             for (let k = 0; k < length; k++) {
               obj.push(() => this.getChar(textName, k, false));
             }
-            push(JSON.parse(JSON.stringify(currentTag)), obj);
+            push(currentTag.slice(), obj);
             currentText = "";
-          } else if (text.substring(i).toLowerCase().startsWith("[fn=")) {
-            push(JSON.parse(JSON.stringify(currentTag)), currentText);
+          } else if (matchesAt(text, i, "[fn=")) {
+            push(currentTag.slice(), currentText);
             currentText = "";
             i += 4;
-            while (text[i] !== "]") {
+            while (i < text.length && text[i] !== "]") {
               currentText += text[i];
               i++;
             }
@@ -938,7 +953,7 @@ export default function (parentClass) {
             for (let k = 0; k < length; k++) {
               obj.push(() => this.getChar(textName, k, true));
             }
-            push(JSON.parse(JSON.stringify(currentTag)), obj);
+            push(currentTag.slice(), obj);
             currentText = "";
           } else {
             currentText += text[i];
@@ -946,7 +961,7 @@ export default function (parentClass) {
         }
       }
 
-      push(JSON.parse(JSON.stringify(currentTag)), currentText);
+      push(currentTag.slice(), currentText);
 
       function push(tag, text) {
         let tagNames = tag.map((x) => x.split(" ")[0]);
