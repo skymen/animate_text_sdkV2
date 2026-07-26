@@ -1,36 +1,10 @@
-// Everything Construct already provides is resolved through its ease registry,
-// so the curves match the timeline and the tween behavior. Only these two have no
-// Construct equivalent and are kept as formulas.
-const LOCAL_EASINGS = {
-  linear: function (pos) {
-    return pos;
-  },
+// Every easing comes from Construct, either one of its own curves or one made in
+// the project's easings editor. This addon defines none of its own.
 
-  // Bounces past the end value, up to about 1.23, before settling.
-  bouncePast: function (pos) {
-    if (pos < 1 / 2.75) {
-      return 7.5625 * pos * pos;
-    } else if (pos < 2 / 2.75) {
-      return 2 - (7.5625 * (pos -= 1.5 / 2.75) * pos + 0.75);
-    } else if (pos < 2.5 / 2.75) {
-      return 2 - (7.5625 * (pos -= 2.25 / 2.75) * pos + 0.9375);
-    } else {
-      return 2 - (7.5625 * (pos -= 2.625 / 2.75) * pos + 0.984375);
-    }
-  },
-
-  // Sharper than any of Construct's out curves.
-  easeTo: function (pos) {
-    return Math.pow(pos, 0.25);
-  },
-};
-
-const localByLowerName = new Map(
-  Object.entries(LOCAL_EASINGS).map(([name, fn]) => [name.toLowerCase(), fn])
-);
-
-// Names this addon used before 2.0.0.0, pointed at the Construct curve they were
-// identical to. elastic is the exception: v1's never left 1, so it did nothing.
+// Names from 1.x that Construct has no name for. The first six were exact
+// duplicates of the curve they now point at. The rest are the nearest match:
+// elastic never left 1.0 so it faded nothing, bouncePast overshot to 1.25 and
+// easeTo rose sharper than anything Construct has.
 const LEGACY_NAMES = new Map([
   ["swingfrom", "easeinback"],
   ["swingto", "easeoutback"],
@@ -39,6 +13,8 @@ const LEGACY_NAMES = new Map([
   ["easefrom", "easeinquart"],
   ["easefromto", "easeinoutquart"],
   ["elastic", "easeoutelastic"],
+  ["bouncepast", "easeoutquart"],
+  ["easeto", "easeoutcirc"],
 ]);
 
 // Custom eases are registered while the project loads and never change after, so
@@ -60,30 +36,18 @@ export function getCustomEase(name) {
   return match ? globalThis.Ease.GetRuntimeEase(match) : null;
 }
 
-// A curve the user made wins, then this addon's own, then Construct's. Names are
-// matched without case, so the camelCase spellings from 1.x still resolve.
-export function getEasingFunction(name) {
-  const custom = getCustomEase(name);
-  if (custom) return (pos) => custom(pos, 0, 1, 1);
-
+// A curve the user made wins over Construct's. Lowercasing the name is what
+// makes the camelCase spellings from 1.x resolve. Null if nothing matches.
+export function resolveEase(name) {
   const lower = name.toLowerCase();
-
-  const local = localByLowerName.get(lower);
-  if (local) return local;
-
-  const builtIn = globalThis.Ease.GetRuntimeEase(
-    LEGACY_NAMES.get(lower) || lower
+  return (
+    getCustomEase(name) ||
+    globalThis.Ease.GetRuntimeEase(LEGACY_NAMES.get(lower) || lower) ||
+    null
   );
-  if (builtIn) return (pos) => builtIn(pos, 0, 1, 1);
-
-  return LOCAL_EASINGS.linear;
 }
 
-// Exposed to alias bodies as EasingFunctions. Resolved on access so every
-// Construct ease is reachable by name, not just the few defined above.
-export const EasingFunctions = new Proxy(LOCAL_EASINGS, {
-  get(target, prop) {
-    if (prop in target || typeof prop !== "string") return target[prop];
-    return getEasingFunction(prop);
-  },
-});
+export function getEasingFunction(name) {
+  const ease = resolveEase(name) || globalThis.Ease.GetRuntimeEase("noease");
+  return (pos) => ease(pos, 0, 1, 1);
+}

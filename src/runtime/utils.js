@@ -1,4 +1,4 @@
-import { EasingFunctions, getCustomEase } from "./easings.js";
+import { resolveEase } from "./easings.js";
 
 function cos(x) {
   return Math.cos((x * Math.PI) / 180);
@@ -14,7 +14,7 @@ function random(x) {
 
 function c3easing(time, name, magnitude = 1, duration = 1, pingpong = false) {
   time = ((time % (duration * 2)) + duration * 2) % (duration * 2);
-  const ease = getCustomEase(name);
+  const ease = resolveEase(name);
   if (!ease) return 0;
   const progress =
     pingpong && time % (duration * 2) > duration
@@ -212,8 +212,6 @@ export const SFDXUtilsFunctions = (globalThis.SFDXUtilsFunctions =
     lerpunlerp: lerpUnlerp,
     unlerp,
     lerp,
-    EasingFunctions,
-    easingfunctions: EasingFunctions,
     c3easing,
     array,
   });

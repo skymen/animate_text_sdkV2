@@ -50,9 +50,7 @@
               "easeinoutback": "Ease in out back",
               "easeinbounce": "Ease in bounce",
               "easeoutbounce": "Ease out bounce",
-              "easeinoutbounce": "Ease in out bounce",
-              "bouncePast": "Bounce past (Animate Text)",
-              "easeTo": "Ease to (Animate Text)"
+              "easeinoutbounce": "Ease in out bounce"
             }
           },
           "tw-custom-easing": {
@@ -168,9 +166,7 @@
                   "easeinoutback": "Ease in out back",
                   "easeinbounce": "Ease in bounce",
                   "easeoutbounce": "Ease out bounce",
-                  "easeinoutbounce": "Ease in out bounce",
-                  "bouncePast": "Bounce past (Animate Text)",
-                  "easeTo": "Ease to (Animate Text)"
+                  "easeinoutbounce": "Ease in out bounce"
                 }
               }
             }

@@ -1,8 +1,7 @@
 // Shared between the "tw-easing" property and the "set-tw-easing" action.
 //
 // These are Construct's own ease names, so the curves match what the timeline
-// and tween behaviors produce. Only the last two are this addon's, because
-// Construct has nothing close to them.
+// and tween behaviors produce.
 //
 // Changing this list remaps existing projects: Construct stores a combo value as
 // an index, not a name. It was replaced once, in 2.0.0.0. Append only from here.
@@ -48,9 +47,6 @@ const EASINGS = [
   ["easeinbounce", "Ease in bounce"],
   ["easeoutbounce", "Ease out bounce"],
   ["easeinoutbounce", "Ease in out bounce"],
-
-  ["bouncePast", "Bounce past (Animate Text)"],
-  ["easeTo", "Ease to (Animate Text)"],
 ];
 
 export const easingNames = EASINGS.map(([name]) => name);
