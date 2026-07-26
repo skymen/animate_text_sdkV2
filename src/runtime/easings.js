@@ -170,28 +170,35 @@ export const EasingFunctions = {
   },
 };
 
-// Searched by name rather than through GetRuntimeEase, which is an exact case
-// lookup while v1 matched case insensitively. Restricted to the project's own
-// curves so one of those still takes precedence over the table above.
-// Cached because the search is a linear scan, and the registry is filled while
-// the project loads and never changes after.
-const customEases = new Map();
+// Custom eases are registered while the project loads and never change after, so
+// the index is built once. Keyed by lowercase name because v1 matched that way
+// and the registry is keyed by exact case.
+let customEaseNames = null;
 
 export function getCustomEase(name) {
-  if (customEases.has(name)) return customEases.get(name);
+  if (!customEaseNames) {
+    customEaseNames = new Map(
+      globalThis.Ease.GetCustomRuntimeEaseNames().map((easeName) => [
+        easeName.toLowerCase(),
+        easeName,
+      ])
+    );
+  }
 
-  const Ease = globalThis.Ease;
-  const match = Ease.GetCustomRuntimeEaseNames().find(
-    (easeName) => easeName.toLowerCase() === name.toLowerCase()
-  );
-  const fn = match ? Ease.GetRuntimeEase(match) : null;
-
-  customEases.set(name, fn);
-  return fn;
+  const match = customEaseNames.get(name.toLowerCase());
+  return match ? globalThis.Ease.GetRuntimeEase(match) : null;
 }
 
+// A curve the user made wins over this addon's table, and anything neither knows
+// falls through to Construct's own eases, which are named in lowercase.
 export function getEasingFunction(name) {
   const custom = getCustomEase(name);
   if (custom) return (pos) => custom(pos, 0, 1, 1.01);
-  return EasingFunctions[name] || EasingFunctions.linear;
+
+  if (EasingFunctions[name]) return EasingFunctions[name];
+
+  const builtIn = globalThis.Ease.GetRuntimeEase(name);
+  if (builtIn) return (pos) => builtIn(pos, 0, 1, 1.01);
+
+  return EasingFunctions.linear;
 }
