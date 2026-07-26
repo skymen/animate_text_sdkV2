@@ -1,25 +1,20 @@
-// The only module in this addon allowed to touch Construct internals.
-// Every function here stands in for a public SDK v2 API that does not exist yet.
-// When one lands, replace that function body and nothing else in the addon changes.
-//
-// Missing public APIs, as of r494:
-//   1. ITextInstance / ISpriteFontInstance drawMaxCharacterCount (get + set).
-//      This is how the typewriter advances characters without re-laying out the
-//      text. ITextInstance.typewriterText() only does a linear reveal over a
-//      fixed duration, so it cannot express per-character pauses, fades or easing.
+// The only module allowed to touch Construct internals. Each function stands in
+// for a public SDK v2 API that does not exist yet, so when one lands only that
+// body changes. Missing as of r494:
+//   1. drawMaxCharacterCount on ITextInstance / ISpriteFontInstance. The public
+//      typewriterText() is a linear reveal over a fixed duration, so it cannot
+//      express per-character pauses, fades or easing.
 //   2. Read access to the wrapped lines, to find where word wrap broke the text.
 
 const HOST_PLUGIN_IDS = ["Text", "Spritefont2"];
 
 let internalRuntime = null;
 
-// HACK: SDK v2 gives a behavior its host as ITextInstance / ISpriteFontInstance,
-// and neither can reach the text renderer. Subclass-patch the two host plugins so
-// the first instance constructed leaks the internal runtime, which can then map
-// any public interface back to its internal instance.
-// Runs at module load, before any instance exists.
-// The build imports this module in Node to analyse the class, where there is no
-// C3 namespace. Only patch when running inside the engine.
+// HACK: a behavior's host arrives as ITextInstance / ISpriteFontInstance, and
+// neither can reach the text renderer. Subclass-patch the two host plugins so the
+// first instance constructed leaks the internal runtime, which maps any public
+// interface back to its internal instance. Must run before any instance exists.
+// The C3 check is because the build imports this module in Node.
 if (globalThis.C3 && globalThis.C3.Plugins) {
   let patchedAny = false;
   for (const pluginId of HOST_PLUGIN_IDS) {
@@ -72,8 +67,6 @@ export function getDrawMaxCharacterCount(iInst) {
   return renderer.GetDrawMaxCharacterCount();
 }
 
-// Returns the text of each line after word wrap, so the caller can work out how
-// many wrap breaks fall before a given character index.
 export function getWrappedLineTexts(iInst) {
   const renderer = getRendererText(iInst);
   if (!renderer) return [];

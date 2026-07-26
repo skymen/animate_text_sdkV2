@@ -73,8 +73,8 @@ export function hslToRgb(hue, saturation, lightness) {
 }
 
 // Browsers stopped accepting unitless values in the comma form of hsl(), so the
-// same colour can now be written hsl(0,100%,50%) or hsl(0 100% 50%) or, in older
-// content, hsl(0,100,50). Accept all of them rather than only the old one.
+// same colour turns up as hsl(0,100%,50%), hsl(0 100% 50%) or, in older content,
+// hsl(0,100,50). All three have to work.
 function splitColorComponents(color) {
   return color
     .slice(color.indexOf("(") + 1, color.lastIndexOf(")"))
@@ -194,8 +194,7 @@ function array(...args) {
   return args;
 }
 
-// Exposed under the same global name as v1 so alias function bodies written by
-// users keep working. Alias bodies are compiled with these names in scope.
+// Same global name as v1: alias bodies are compiled with these names in scope.
 export const SFDXUtilsFunctions = (globalThis.SFDXUtilsFunctions =
   globalThis.SFDXUtilsFunctions || {
     cos,

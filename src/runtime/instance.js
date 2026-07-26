@@ -30,7 +30,6 @@ const DEFAULT_ALIASES = [
 
 const CONDITIONAL_TAGS = ["hide", "b", "i", "u", "s", "stroke"];
 const SOLO_TAGS = ["icon"];
-// Typewriter timing keys. They drive the reveal and are never written out as tags.
 const TIMING_TAGS = ["wait", "fade", "type", "pause"];
 const FRAGMENT_WORTH = { icon: 1 };
 const SFDX_TAG_ALIASES = [
@@ -42,13 +41,10 @@ const SFDX_TAG_ALIASES = [
   "animtext",
 ];
 
-// Case insensitive comparison at an offset, without copying the rest of the
-// string the way substring(i).toLowerCase() does on every character.
 function matchesAt(text, index, token) {
   return text.slice(index, index + token.length).toLowerCase() === token;
 }
 
-// Construct hands out colours as 0-1 components; the tags want hex.
 function rgbToHex(rgb) {
   if (!rgb) return "#000000";
   return rgb255ToHex([rgb[0] * 255, rgb[1] * 255, rgb[2] * 255]);
@@ -94,8 +90,8 @@ export default function (parentClass) {
       this.typewriterTagData = [];
       this.AnimFunctions = {};
 
-      // What the user last handed us, kept so savegames can rebuild the parsed
-      // state instead of serialising live functions.
+      // Kept so savegames can rebuild the parsed state instead of serialising
+      // live functions.
       this.sourceText = "";
       this.sourceMode = null;
       this.pendingRestore = null;
@@ -571,8 +567,8 @@ export default function (parentClass) {
       this.curTypedHeight = "";
       let pureText = this.getTextWithNoTags(this.text);
 
-      // Records where a tag adds fragments beyond its own characters, so the
-      // draw character count can be offset by the right amount.
+      // Where a tag adds fragments beyond its own characters, so the draw
+      // character count can be offset by the right amount.
       this.additionalFragments = [];
       let curFragmentOffset = 0;
       let curFragmentId = 0;
@@ -651,9 +647,8 @@ export default function (parentClass) {
       this.sourceText = text;
       this.text = text;
       this.SetTextCall = true;
-      // Setting text cancels a typewriter in progress. Without this the tick
-      // walks the new text against the old typewriter timings and runs off the
-      // end of TWData as soon as the new text is longer.
+      // Without this the tick walks the new text against the old typewriter
+      // timings and runs off the end of TWData once the new text is longer.
       this.typewriterActive = false;
       this.typewriterPaused = false;
       this.TWData = {};
@@ -883,10 +878,9 @@ export default function (parentClass) {
         regex.lastIndex = 0;
       }
 
-      // A solo tag with no body renders nothing, because the tag is only
-      // emitted alongside a character. Give it the same zero width placeholder
-      // the literal [icon=x] form above expands to, so both spellings behave
-      // the same and the typewriter has a character to reveal it with.
+      // A solo tag is only emitted alongside a character, so one with no body
+      // renders nothing. Give it the same zero width placeholder the literal
+      // [icon=x] form above expands to.
       text = text.replace(
         new RegExp(
           "\\[sfdx=(" + SOLO_TAGS.join("|") + ")(\\s[^\\]]*)?\\]\\[/sfdx\\]",
@@ -1070,9 +1064,8 @@ export default function (parentClass) {
       this.TWEasing = o.TWEasing;
       this.linkedDictionnaryUID = o.linkedDictionnaryUID;
       this.linkedDictionnary = undefined;
-      // The parsed text and its animation functions are rebuilt rather than
-      // restored. Deferred to the next tick so the linked dictionary's UID can
-      // be resolved first.
+      // Rebuilt rather than restored, on the next tick so the linked
+      // dictionary's UID can be resolved first.
       this.pendingRestore = o;
     }
 
