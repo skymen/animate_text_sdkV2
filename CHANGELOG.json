@@ -1,0 +1,7 @@
+{
+  "2.0.0.0": {
+    "added": "Rebuilt on the Construct addon SDK v2. Same addon id, same actions, conditions, expressions and properties, so it drops into existing projects.\nTypewriter easing now accepts any easing made in the project's easings editor, looked up by name. Use the Custom Easing property or the \"Set Typewriter Easing (by name)\" action.\nTypewriter state now shows up in the debugger.\nThe alias name in \"Set Function Animation alias\" now autocompletes across actions.",
+    "changed": "Save states now store the text you passed in and rebuild the parsed animation when loading, instead of serialising live functions. Save states made with 1.x will not load into 2.0.0.0.\nScript interface methods are now generated from the actions. setTwEasing(name) is now setTwEasingString(name), and skipTwToNextPause(toEnd) is now skipTw(mode) where mode 0 skips to the end and 1 skips to the next pause.",
+    "fixed": "Linking a dictionary and then loading a save state left the link broken, because the instance was restored instead of its data map. [var=...] tags stopped resolving after a load.\nTypedTextWidth and TypedTextHeight returned an invalid value when the behavior was on an object that is not Text or Sprite Font. They now return 0.\nThe LastLetter expression returned an invalid value before the first letter was typed. It now returns an empty string.\nRemoved four pieces of internal state that were saved but never read."
+  }
+}

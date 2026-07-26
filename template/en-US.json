@@ -1,0 +1,303 @@
+{
+  "languageTag": "en-US",
+  "fileDescription": "Strings for skymen_skymen_spritefontdx.",
+  "text": {
+    "behaviors": {
+      "skymen_skymen_spritefontdx": {
+        "name": "Animate Text",
+        "description": "A behavior that extends the animation capabilities of Spritefont and text",
+        "help-url": "https://www.construct.net",
+        "aceCategories": {
+          "general": "General",
+          "typewriter": "Typewriter"
+        },
+        "properties": {
+          "tw-params": {
+            "name": "Typewriter Params",
+            "desc": "Separated by ';'. 'value [a/x/y/o] <number>' or 'duration [type/fade] <number>'"
+          },
+          "tw-easing": {
+            "name": "Typewriter Easing",
+            "desc": "The interpolation method used to ease the fading",
+            "items": {
+              "linear": "linear",
+              "easeInQuad": "easeInQuad",
+              "easeOutQuad": "easeOutQuad",
+              "easeInOutQuad": "easeInOutQuad",
+              "easeInCubic": "easeInCubic",
+              "easeOutCubic": "easeOutCubic",
+              "easeInOutCubic": "easeInOutCubic",
+              "easeInQuart": "easeInQuart",
+              "easeOutQuart": "easeOutQuart",
+              "easeInOutQuart": "easeInOutQuart",
+              "easeInQuint": "easeInQuint",
+              "easeOutQuint": "easeOutQuint",
+              "easeInOutQuint": "easeInOutQuint",
+              "easeInSine": "easeInSine",
+              "easeOutSine": "easeOutSine",
+              "easeInOutSine": "easeInOutSine",
+              "easeInExpo": "easeInExpo",
+              "easeOutExpo": "easeOutExpo",
+              "easeInOutExpo": "easeInOutExpo",
+              "easeInCirc": "easeInCirc",
+              "easeOutCirc": "easeOutCirc",
+              "easeInOutCirc": "easeInOutCirc",
+              "easeOutBounce": "easeOutBounce",
+              "easeInBack": "easeInBack",
+              "easeOutBack": "easeOutBack",
+              "easeInOutBack": "easeInOutBack",
+              "elastic": "elastic",
+              "swingFromTo": "swingFromTo",
+              "swingFrom": "swingFrom",
+              "swingTo": "swingTo",
+              "bounce": "bounce",
+              "bouncePast": "bouncePast",
+              "easeFromTo": "easeFromTo",
+              "easeFrom": "easeFrom",
+              "easeTo": "easeTo"
+            }
+          },
+          "tw-custom-easing": {
+            "name": "Custom Easing",
+            "desc": "Set an easing by name, or use Easings created using C3's easings editor"
+          },
+          "enable-default-functions": {
+            "name": "Default Aliases",
+            "desc": "If checked, the behavior will automatically add default alias functions (wave, shake, swing)"
+          }
+        },
+        "actions": {
+          "link-dictionary": {
+            "list-name": "Link Dictionary",
+            "display-text": "{my}: Link dictionary {0}",
+            "description": "Link a dictionary for holding the vars",
+            "params": {
+              "dictionary": {
+                "name": "Dictionary",
+                "desc": "The dictionary to link for holding the vars"
+              }
+            }
+          },
+          "set-alias": {
+            "list-name": "Set Function Animation alias",
+            "display-text": "{my}: function [b]{0}[/b] ([i]{1}[/i]) { return {2} }",
+            "description": "Set a function animation alias",
+            "params": {
+              "name": {
+                "name": "Name",
+                "desc": "The name of the alias"
+              },
+              "params": {
+                "name": "Params",
+                "desc": "The params of the function (not accounting for t and i)"
+              },
+              "body": {
+                "name": "Body",
+                "desc": "The body of the function"
+              }
+            }
+          },
+          "set-text": {
+            "list-name": "Set Text",
+            "display-text": "{my}: Set text to [b]{0}[/b]",
+            "description": "Set the text, after parsing it",
+            "params": {
+              "text": {
+                "name": "Text",
+                "desc": "The text to set"
+              }
+            }
+          },
+          "pause-tw": {
+            "list-name": "Pause Typewriter",
+            "display-text": "{my}: Pause typewriter",
+            "description": "Pause the typewriter",
+            "params": {}
+          },
+          "resume-tw": {
+            "list-name": "Resume Typewriter",
+            "display-text": "{my}: Resume typewriter",
+            "description": "Resume the typewriter",
+            "params": {}
+          },
+          "set-tw-easing-string": {
+            "list-name": "Set Typewriter Easing (by name)",
+            "display-text": "{my}: Set typewriter easing (by name) to [b]{0}[/b]",
+            "description": "Set the typewriter easing (by name)",
+            "params": {
+              "easing": {
+                "name": "Easing",
+                "desc": "The easing to use"
+              }
+            }
+          },
+          "set-tw-easing": {
+            "list-name": "Set Typewriter Easing",
+            "display-text": "{my}: Set typewriter easing to [b]{0}[/b]",
+            "description": "Set the typewriter easing",
+            "params": {
+              "easing": {
+                "name": "Easing",
+                "desc": "The easing to use",
+                "items": {
+                  "linear": "linear",
+                  "easeInQuad": "easeInQuad",
+                  "easeOutQuad": "easeOutQuad",
+                  "easeInOutQuad": "easeInOutQuad",
+                  "easeInCubic": "easeInCubic",
+                  "easeOutCubic": "easeOutCubic",
+                  "easeInOutCubic": "easeInOutCubic",
+                  "easeInQuart": "easeInQuart",
+                  "easeOutQuart": "easeOutQuart",
+                  "easeInOutQuart": "easeInOutQuart",
+                  "easeInQuint": "easeInQuint",
+                  "easeOutQuint": "easeOutQuint",
+                  "easeInOutQuint": "easeInOutQuint",
+                  "easeInSine": "easeInSine",
+                  "easeOutSine": "easeOutSine",
+                  "easeInOutSine": "easeInOutSine",
+                  "easeInExpo": "easeInExpo",
+                  "easeOutExpo": "easeOutExpo",
+                  "easeInOutExpo": "easeInOutExpo",
+                  "easeInCirc": "easeInCirc",
+                  "easeOutCirc": "easeOutCirc",
+                  "easeInOutCirc": "easeInOutCirc",
+                  "easeOutBounce": "easeOutBounce",
+                  "easeInBack": "easeInBack",
+                  "easeOutBack": "easeOutBack",
+                  "easeInOutBack": "easeInOutBack",
+                  "elastic": "elastic",
+                  "swingFromTo": "swingFromTo",
+                  "swingFrom": "swingFrom",
+                  "swingTo": "swingTo",
+                  "bounce": "bounce",
+                  "bouncePast": "bouncePast",
+                  "easeFromTo": "easeFromTo",
+                  "easeFrom": "easeFrom",
+                  "easeTo": "easeTo"
+                }
+              }
+            }
+          },
+          "set-tw-params": {
+            "list-name": "Set Typewriter Params",
+            "display-text": "{my}: Set typewriter params to [b]{0}[/b]",
+            "description": "Set the typewriter params",
+            "params": {
+              "params": {
+                "name": "Params",
+                "desc": "Separated by ';'. 'value [a/x/y/o] <number>' or 'duration [type/fade] <number>'"
+              }
+            }
+          },
+          "skip-tw": {
+            "list-name": "Skip Typewriter",
+            "display-text": "{my}: Skip typewriter [b]{0}[/b]",
+            "description": "Skip the typewriter",
+            "params": {
+              "mode": {
+                "name": "Mode",
+                "desc": "The skip mode to use",
+                "items": {
+                  "to-end": "to end",
+                  "to-next": "to next pause"
+                }
+              }
+            }
+          },
+          "typewrite": {
+            "list-name": "Typewrite",
+            "display-text": "{my}: Typewrite [b]{0}[/b]",
+            "description": "Typewrite the text",
+            "params": {
+              "text": {
+                "name": "Text",
+                "desc": "The text to typewrite"
+              }
+            }
+          }
+        },
+        "conditions": {
+          "is-typing": {
+            "list-name": "Is Typing",
+            "display-text": "{my}: Is typing",
+            "description": "Check if the typewriter is typing",
+            "params": {}
+          },
+          "on-letter-typed": {
+            "list-name": "On letter typed",
+            "display-text": "{my}: On letter typed",
+            "description": "Triggered when a letter is typed",
+            "params": {}
+          },
+          "on-tw-pause": {
+            "list-name": "On typewriter pause",
+            "display-text": "{my}: On typewriter pause",
+            "description": "Triggered when the typewriter pauses",
+            "params": {}
+          },
+          "on-tw-resume": {
+            "list-name": "On typewriter resume",
+            "display-text": "{my}: On typewriter resume",
+            "description": "Triggered when the typewriter resumes",
+            "params": {}
+          },
+          "on-tw-start": {
+            "list-name": "On typewriter start",
+            "display-text": "{my}: On typewriter start",
+            "description": "Triggered when the typewriter starts",
+            "params": {}
+          },
+          "on-tw-stop": {
+            "list-name": "On typewriter stop",
+            "display-text": "{my}: On typewriter stop",
+            "description": "Triggered when the typewriter stops",
+            "params": {}
+          }
+        },
+        "expressions": {
+          "c2-str-to-c3-str": {
+            "translated-name": "c2StrToC3Str",
+            "description": "EXPERIMENTAL: Tries to rewrite a SFDX C2 text string into a C3 one",
+            "params": {
+              "text": {
+                "name": "Text",
+                "desc": "The text to convert"
+              }
+            }
+          },
+          "last-letter-id": {
+            "translated-name": "lastLetterId",
+            "description": "Get the id of the last letter typed",
+            "params": {}
+          },
+          "last-letter": {
+            "translated-name": "lastLetter",
+            "description": "Get the last letter typed",
+            "params": {}
+          },
+          "tw-easing": {
+            "translated-name": "twEasing",
+            "description": "Get the easing used by the typewriter",
+            "params": {}
+          },
+          "tw-params": {
+            "translated-name": "twParams",
+            "description": "Get the parameters used by the typewriter",
+            "params": {}
+          },
+          "typed-text-height": {
+            "translated-name": "typedTextHeight",
+            "description": "Get the height of the typed text",
+            "params": {}
+          },
+          "typed-text-width": {
+            "translated-name": "typedTextWidth",
+            "description": "Get the width of the typed text",
+            "params": {}
+          }
+        }
+      }
+    }
+  }
+}

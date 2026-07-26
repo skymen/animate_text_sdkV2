@@ -1,0 +1,42 @@
+// Shared between the "tw-easing" property and the "set-tw-easing" action.
+// Order is frozen: combo values are stored as an index, so inserting or
+// reordering an entry would silently change existing projects.
+export const easingNames = [
+  "linear",
+  "easeInQuad",
+  "easeOutQuad",
+  "easeInOutQuad",
+  "easeInCubic",
+  "easeOutCubic",
+  "easeInOutCubic",
+  "easeInQuart",
+  "easeOutQuart",
+  "easeInOutQuart",
+  "easeInQuint",
+  "easeOutQuint",
+  "easeInOutQuint",
+  "easeInSine",
+  "easeOutSine",
+  "easeInOutSine",
+  "easeInExpo",
+  "easeOutExpo",
+  "easeInOutExpo",
+  "easeInCirc",
+  "easeOutCirc",
+  "easeInOutCirc",
+  "easeOutBounce",
+  "easeInBack",
+  "easeOutBack",
+  "easeInOutBack",
+  "elastic",
+  "swingFromTo",
+  "swingFrom",
+  "swingTo",
+  "bounce",
+  "bouncePast",
+  "easeFromTo",
+  "easeFrom",
+  "easeTo",
+];
+
+export const easingItems = easingNames.map((name) => ({ [name]: name }));
