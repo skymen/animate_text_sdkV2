@@ -1,6 +1,44 @@
-# Does Experimental Text Fix still help? (checked against r494)
+# Text rendering gaps in the SDK, and Experimental Text Fix (checked against r494)
 
-`skymen/experimental-text-fix` monkey patches the Construct text renderer. It was
+## What Animate Text still needs internals for
+
+Two things, both on the text renderer, both wrapped in `src/runtime/engineInternals.js`.
+
+**Reveal a given number of characters.** The typewriter shows the first N
+characters of a string it rebuilds every tick, because the animation tags around
+each character change every frame. `SetDrawMaxCharacterCount` clips the draw
+without touching the layout, so the text does not reflow while it types.
+
+The public alternative is `ITextInstance.typewriterText(str, duration)`, which the
+engine drives itself: it interpolates a character count from a start time to an end
+time, and cancels the moment the text is set again. That is one linear reveal of a
+fixed string. This addon needs per-character timing instead, a `[tw=wait]` before a
+character, a `[tw=pause]` that holds until an action resumes it, a per-character
+fade whose length and easing come from the typewriter parameters, and a `[tw=fn]`
+that calls into the event sheet partway through. None of that fits in a single
+duration, and rebuilding the string each tick would cancel it anyway.
+
+What would close it: a `drawMaxCharacterCount` accessor on `ITextInstance` and
+`ISpriteFontInstance`.
+
+**Read where word wrap broke the text.** That character count counts what the
+renderer draws. Word wrap consumes the space it breaks on, so the count drifts from
+the character index the addon tracks by one per wrapped line, and a wrapped
+paragraph reveals ahead of or behind the intended character. Correcting it means
+asking the renderer where the lines actually broke.
+
+The public surface gives text size and per-tag positions, but nothing that says
+where a line ends. `getTagPositionAndSize()` is the closest, and it only covers
+fragments carrying a `[tag=]` marker, so it cannot see the breaks.
+
+What would close it: any read access to the wrapped lines, even just their lengths.
+
+Nothing else is internal. `UpdateRender` was here until `runtime.sdk.updateRender()`
+replaced it.
+
+## Does Experimental Text Fix still help?
+
+The rest of this file is about `skymen/experimental-text-fix`, which monkey patches the Construct text renderer. It was
 written against an engine from roughly two to three years ago. This is a review of
 its three patches against r494, to decide which are still worth having.
 

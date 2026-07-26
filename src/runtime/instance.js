@@ -537,7 +537,7 @@ export default function (parentClass) {
           this.instance,
           this.scheduleMaxCharacterCount
         );
-        internals.updateRender();
+        this.runtime.sdk.updateRender();
         this.scheduleMaxCharacterCount = null;
       }
     }

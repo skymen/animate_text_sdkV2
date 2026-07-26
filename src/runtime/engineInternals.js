@@ -1,10 +1,39 @@
 // The only module allowed to touch Construct internals. Each function stands in
 // for a public SDK v2 API that does not exist yet, so when one lands only that
-// body changes. Missing as of r494:
-//   1. drawMaxCharacterCount on ITextInstance / ISpriteFontInstance. The public
-//      typewriterText() is a linear reveal over a fixed duration, so it cannot
-//      express per-character pauses, fades or easing.
-//   2. Read access to the wrapped lines, to find where word wrap broke the text.
+// body changes and the rest of the addon is untouched. Two things are missing as
+// of r494, both on the text renderer.
+//
+// 1. Reveal a given number of characters.
+//    The typewriter has to show the first N characters of a string that is being
+//    rebuilt every tick, because the animation tags around each character change
+//    every frame. SetDrawMaxCharacterCount does exactly that: it clips the draw
+//    without touching the layout, so the text does not reflow as it types.
+//    The public alternative is ITextInstance.typewriterText(str, duration), which
+//    the engine drives itself by interpolating a character count from a start time
+//    to an end time. That is a linear reveal of a fixed string over a fixed
+//    duration, and it cancels as soon as the text is set again. This addon needs
+//    per-character timing instead: a [tw=wait] before a character, a [tw=pause]
+//    that stops until an action resumes it, a per-character fade whose length and
+//    easing come from the typewriter parameters, and a [tw=fn] that calls into the
+//    event sheet mid-string. None of that can be expressed as one duration, and
+//    setting the text each tick would cancel it anyway.
+//    Public equivalent would be: a drawMaxCharacterCount accessor.
+//
+// 2. Read where word wrap broke the text.
+//    The character count above counts what the renderer draws, and word wrap
+//    consumes the space it breaks on, so the count drifts from the character index
+//    the addon is tracking by one per wrapped line. Without correcting for that,
+//    a wrapped paragraph reveals ahead of or behind the intended character. The
+//    only way to correct it is to ask the renderer where the lines actually broke,
+//    which means reading its wrapped text.
+//    The public surface exposes text size and per-tag positions, but nothing that
+//    says where a line ends. getTagPositionAndSize() comes closest, and it only
+//    covers fragments that carry a [tag=] marker, so it cannot see the breaks.
+//    Public equivalent would be: a way to read the wrapped lines, even just their
+//    lengths.
+//
+// Everything else this addon needs is public. UpdateRender was in here until
+// runtime.sdk.updateRender() covered it.
 
 const HOST_PLUGIN_IDS = ["Text", "Spritefont2"];
 
@@ -89,7 +118,3 @@ export function getWrappedLineTexts(iInst) {
   return lines;
 }
 
-export function updateRender() {
-  if (!internalRuntime) return;
-  internalRuntime.UpdateRender();
-}
