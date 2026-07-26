@@ -170,10 +170,9 @@ export const EasingFunctions = {
   },
 };
 
-// Searching the names rather than calling GetRuntimeEase(name) directly, for two
-// reasons: that would also return Construct's predefined eases, which must not
-// shadow the table above, and the match has to be case insensitive like v1's was,
-// while the registry is keyed by exact case.
+// Searched by name rather than through GetRuntimeEase, which is an exact case
+// lookup while v1 matched case insensitively. Restricted to the project's own
+// curves so one of those still takes precedence over the table above.
 // Cached because the search is a linear scan, and the registry is filled while
 // the project loads and never changes after.
 const customEases = new Map();
