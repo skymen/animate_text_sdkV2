@@ -1,53 +1,67 @@
 // Shared between the "tw-easing" property and the "set-tw-easing" action.
 //
-// These are Construct's own ease names, so the curves match what the timeline
-// and tween behaviors produce.
+// Every curve is Construct's, so they match the timeline and the tween behavior.
+// The keys keep the 1.x spelling, because a project stores the key of the item
+// you picked and Construct matches it with case: renaming easeInQuad to
+// easeinquad would leave every project pointing at an item that no longer exists,
+// with no warning until preview.
 //
-// A project stores the key of the chosen item, so renaming or removing one leaves
-// projects pointing at a key that no longer exists. The list was replaced once,
-// in 2.0.0.0. Append only from here.
+// Append only. Never rename or remove.
 const EASINGS = [
   ["linear", "Linear"],
 
-  ["easeinquad", "Ease in quad"],
-  ["easeoutquad", "Ease out quad"],
-  ["easeinoutquad", "Ease in out quad"],
+  ["easeInQuad", "Ease in quad"],
+  ["easeOutQuad", "Ease out quad"],
+  ["easeInOutQuad", "Ease in out quad"],
 
-  ["easeincubic", "Ease in cubic"],
-  ["easeoutcubic", "Ease out cubic"],
-  ["easeinoutcubic", "Ease in out cubic"],
+  ["easeInCubic", "Ease in cubic"],
+  ["easeOutCubic", "Ease out cubic"],
+  ["easeInOutCubic", "Ease in out cubic"],
 
-  ["easeinquart", "Ease in quart"],
-  ["easeoutquart", "Ease out quart"],
-  ["easeinoutquart", "Ease in out quart"],
+  ["easeInQuart", "Ease in quart"],
+  ["easeOutQuart", "Ease out quart"],
+  ["easeInOutQuart", "Ease in out quart"],
 
-  ["easeinquint", "Ease in quint"],
-  ["easeoutquint", "Ease out quint"],
-  ["easeinoutquint", "Ease in out quint"],
+  ["easeInQuint", "Ease in quint"],
+  ["easeOutQuint", "Ease out quint"],
+  ["easeInOutQuint", "Ease in out quint"],
 
-  ["easeinsine", "Ease in sine"],
-  ["easeoutsine", "Ease out sine"],
-  ["easeinoutsine", "Ease in out sine"],
+  ["easeInSine", "Ease in sine"],
+  ["easeOutSine", "Ease out sine"],
+  ["easeInOutSine", "Ease in out sine"],
 
-  ["easeinexpo", "Ease in expo"],
-  ["easeoutexpo", "Ease out expo"],
-  ["easeinoutexpo", "Ease in out expo"],
+  ["easeInExpo", "Ease in expo"],
+  ["easeOutExpo", "Ease out expo"],
+  ["easeInOutExpo", "Ease in out expo"],
 
-  ["easeincirc", "Ease in circ"],
-  ["easeoutcirc", "Ease out circ"],
-  ["easeinoutcirc", "Ease in out circ"],
+  ["easeInCirc", "Ease in circ"],
+  ["easeOutCirc", "Ease out circ"],
+  ["easeInOutCirc", "Ease in out circ"],
 
-  ["easeinelastic", "Ease in elastic"],
-  ["easeoutelastic", "Ease out elastic"],
-  ["easeinoutelastic", "Ease in out elastic"],
+  ["easeInElastic", "Ease in elastic"],
+  ["easeOutElastic", "Ease out elastic"],
+  ["easeInOutElastic", "Ease in out elastic"],
 
-  ["easeinback", "Ease in back"],
-  ["easeoutback", "Ease out back"],
-  ["easeinoutback", "Ease in out back"],
+  ["easeInBack", "Ease in back"],
+  ["easeOutBack", "Ease out back"],
+  ["easeInOutBack", "Ease in out back"],
 
-  ["easeinbounce", "Ease in bounce"],
-  ["easeoutbounce", "Ease out bounce"],
-  ["easeinoutbounce", "Ease in out bounce"],
+  ["easeInBounce", "Ease in bounce"],
+  ["easeOutBounce", "Ease out bounce"],
+  ["easeInOutBounce", "Ease in out bounce"],
+
+  // Kept only so projects that picked them still load. Each is either a second
+  // name for a curve already listed above, or the nearest match to one that no
+  // longer exists.
+  ["swingFrom", "Ease in back (old name: swingFrom)"],
+  ["swingTo", "Ease out back (old name: swingTo)"],
+  ["swingFromTo", "Ease in out back (old name: swingFromTo)"],
+  ["bounce", "Ease out bounce (old name: bounce)"],
+  ["easeFrom", "Ease in quart (old name: easeFrom)"],
+  ["easeFromTo", "Ease in out quart (old name: easeFromTo)"],
+  ["elastic", "Ease out elastic (old name: elastic)"],
+  ["bouncePast", "Ease out back (old name: bouncePast)"],
+  ["easeTo", "Ease out circ (old name: easeTo)"],
 ];
 
 export const easingNames = EASINGS.map(([name]) => name);
