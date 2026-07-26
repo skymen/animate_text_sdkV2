@@ -170,23 +170,23 @@ export const EasingFunctions = {
   },
 };
 
-// Only the project's own curves are searched, so an addon easing of the same
-// name cannot shadow one the user authored. Kept because the search is a linear
-// scan and the registry is filled at load time and never changes after.
+// Searching the names rather than calling GetRuntimeEase(name) directly, for two
+// reasons: that would also return Construct's predefined eases, which must not
+// shadow the table above, and the match has to be case insensitive like v1's was,
+// while the registry is keyed by exact case.
+// Cached because the search is a linear scan, and the registry is filled while
+// the project loads and never changes after.
 const customEases = new Map();
 
 export function getCustomEase(name) {
   if (customEases.has(name)) return customEases.get(name);
 
   const Ease = globalThis.Ease;
-  const match =
-    Ease && Ease.GetCustomRuntimeEaseNames
-      ? Ease.GetCustomRuntimeEaseNames().find(
-          (easeName) => easeName.toLowerCase() === String(name).toLowerCase()
-        )
-      : null;
-
+  const match = Ease.GetCustomRuntimeEaseNames().find(
+    (easeName) => easeName.toLowerCase() === name.toLowerCase()
+  );
   const fn = match ? Ease.GetRuntimeEase(match) : null;
+
   customEases.set(name, fn);
   return fn;
 }
