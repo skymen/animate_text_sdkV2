@@ -161,6 +161,10 @@ export default function (parentClass) {
       );
     }
 
+    isSupportedHost() {
+      return this.isTextHost() || this.isSpriteFontHost();
+    }
+
     parseTypewriterParams(params) {
       var paramsA = params.trim().split(";");
       var defaultParams = {
@@ -269,6 +273,17 @@ export default function (parentClass) {
     }
 
     _tick2() {
+      if (!this.isSupportedHost()) {
+        console.warn(
+          "[Animate Text] This behavior only works on Text and Sprite Font " +
+            'objects. It is doing nothing on "' +
+            this.instance.objectType.name +
+            '".'
+        );
+        this._setTicking2(false);
+        return;
+      }
+
       if (this.pendingRestore) {
         this.applyPendingRestore();
       }
