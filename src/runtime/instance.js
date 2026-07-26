@@ -632,6 +632,12 @@ export default function (parentClass) {
       this.sourceText = text;
       this.text = text;
       this.SetTextCall = true;
+      // Setting text cancels a typewriter in progress. Without this the tick
+      // walks the new text against the old typewriter timings and runs off the
+      // end of TWData as soon as the new text is longer.
+      this.typewriterActive = false;
+      this.typewriterPaused = false;
+      this.TWData = {};
       this.parseText();
       this.animated = true;
     }
