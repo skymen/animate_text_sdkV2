@@ -3,8 +3,9 @@
 
 // Names from 1.x that Construct has no name for. The first six were exact
 // duplicates of the curve they now point at. The rest are the nearest match:
-// elastic never left 1.0 so it faded nothing, bouncePast overshot to 1.25 and
-// easeTo rose sharper than anything Construct has.
+// elastic never left 1.0 so it faded nothing, easeTo rose sharper than anything
+// Construct has, and bouncePast overshot the end value, which out back is the
+// only Construct curve to do.
 const LEGACY_NAMES = new Map([
   ["swingfrom", "easeinback"],
   ["swingto", "easeoutback"],
@@ -13,7 +14,7 @@ const LEGACY_NAMES = new Map([
   ["easefrom", "easeinquart"],
   ["easefromto", "easeinoutquart"],
   ["elastic", "easeoutelastic"],
-  ["bouncepast", "easeoutquart"],
+  ["bouncepast", "easeoutback"],
   ["easeto", "easeoutcirc"],
 ]);
 

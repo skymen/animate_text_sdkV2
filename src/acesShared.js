@@ -3,8 +3,9 @@
 // These are Construct's own ease names, so the curves match what the timeline
 // and tween behaviors produce.
 //
-// Changing this list remaps existing projects: Construct stores a combo value as
-// an index, not a name. It was replaced once, in 2.0.0.0. Append only from here.
+// A project stores the key of the chosen item, so renaming or removing one leaves
+// projects pointing at a key that no longer exists. The list was replaced once,
+// in 2.0.0.0. Append only from here.
 const EASINGS = [
   ["linear", "Linear"],
 
