@@ -302,7 +302,11 @@ export default function (parentClass) {
       }
 
       // If the host's own Set Text action was called, stop animating.
-      if (!this.SetTextCall && this.animated && this.instance.text != this.lastKnown) {
+      if (
+        !this.SetTextCall &&
+        this.animated &&
+        this.instance.text != this.lastKnown
+      ) {
         this.animated = false;
       }
 
@@ -770,17 +774,15 @@ export default function (parentClass) {
         let regex = /^[\d\w]+(\(.*\))?$/g;
         tag = tag.trim();
         let found = regex.test(tag);
+        const arr = tag.split("(");
+        const name = arr[0].trim().toLowerCase();
         if (found) {
-          var arr = tag.split("(");
-          var name = arr[0].trim().toLowerCase();
           found = Object.prototype.hasOwnProperty.call(
             this.aliasFunctions,
             name
           );
         }
         if (found) {
-          var arr = tag.split("(");
-          var name = arr[0].trim().toLowerCase();
           var fn = this.aliasFunctions[name];
 
           if (arr.length > 1) {
@@ -828,13 +830,11 @@ export default function (parentClass) {
             this.AnimFunctions[tag] = fn;
           }
         } else {
-          var arr = [];
-          arr = arr.concat(
-            [Function],
-            ["t", "i"],
-            [this.GetBody(tag.toLowerCase())]
-          );
-          this.AnimFunctions[tag] = new (Function.bind.apply(Function, arr))();
+          const ctorArgs = [Function, "t", "i", this.GetBody(tag.toLowerCase())];
+          this.AnimFunctions[tag] = new (Function.bind.apply(
+            Function,
+            ctorArgs
+          ))();
         }
       }
       return this.AnimFunctions[tag];
