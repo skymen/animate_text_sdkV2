@@ -27,8 +27,12 @@
 //    only way to correct it is to ask the renderer where the lines actually broke,
 //    which means reading its wrapped text.
 //    The public surface exposes text size and per-tag positions, but nothing that
-//    says where a line ends. getTagPositionAndSize() comes closest, and it only
-//    covers fragments that carry a [tag=] marker, so it cannot see the breaks.
+//    says where a line ends. Inserting a [tag=] marker and grouping characters by
+//    the y it reports back was measured against this read over 31 strings and does
+//    not work: that y is where the character was drawn, so the per-character
+//    offsety this addon applies scatters one line across many y values, and blank
+//    lines and the space word wrap trims at a break carry no fragment to tag at
+//    all. See docs/experimental-text-fix-review.md.
 //    Public equivalent would be: a way to read the wrapped lines, even just their
 //    lengths.
 //
@@ -78,10 +82,6 @@ function getRendererText(iInst) {
   const sdkInst = getHostSdkInstance(iInst);
   if (!sdkInst) return null;
   return sdkInst._rendererText || sdkInst._spriteFontText || null;
-}
-
-export function isReady(iInst) {
-  return !!getRendererText(iInst);
 }
 
 export function setDrawMaxCharacterCount(iInst, count) {
