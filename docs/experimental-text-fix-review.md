@@ -28,8 +28,28 @@ paragraph reveals ahead of or behind the intended character. Correcting it means
 asking the renderer where the lines actually broke.
 
 The public surface gives text size and per-tag positions, but nothing that says
-where a line ends. `getTagPositionAndSize()` is the closest, and it only covers
-fragments carrying a `[tag=]` marker, so it cannot see the breaks.
+where a line ends. `getTagPositionAndSize()` looks like a way in, since you can
+insert your own `[tag=]` marker and read back the y of the character you marked,
+then group characters by y to recover the lines. That was measured against the
+internal read, character by character, over 31 strings. It does not work, for two
+reasons that cannot be tuned away.
+
+*The y it returns is the rendered position, not the line.* Same sentence, same
+wrapping, the only difference being whether the per-character `offsety` tags are
+animating:
+
+```
+typewriter settled    chars=76  internalLines=3  tagRows=3
+typewriter mid fade   chars=76  internalLines=3  tagRows=25
+```
+
+Vertical offsetting is what this addon exists to do, so the signal the approach
+depends on is the one it destroys.
+
+*Blank lines and wrap-point spaces produce no fragment.* There is nothing to tag,
+so they cannot be probed. With `"top\n\n\nbottom"` the renderer reports four lines
+and tagging finds two, and every probe of a space that word wrap trimmed comes back
+empty.
 
 What would close it: any read access to the wrapped lines, even just their lengths.
 
