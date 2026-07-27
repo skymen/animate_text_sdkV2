@@ -4,6 +4,9 @@ import { easingNames } from "../acesShared.js";
 import { getEasingFunction } from "./easings.js";
 import { lerp, unlerp, rgb255ToHex, SFDXUtilsFunctions } from "./utils.js";
 import * as internals from "./engineInternals.js";
+// TEMPORARY debug tooling. Delete this import and the registerForDebug call in
+// the constructor, and delete debugTools.js, to remove it.
+import { registerForDebug } from "./debugTools.js";
 
 const DEFAULT_ALIASES = [
   {
@@ -106,6 +109,7 @@ export default function (parentClass) {
       }
 
       this._setTicking2(true);
+      registerForDebug(this); // TEMPORARY, see the import
     }
 
     _trigger(method) {
