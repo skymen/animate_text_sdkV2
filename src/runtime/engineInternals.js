@@ -2,6 +2,7 @@
 // for a public SDK v2 API that does not exist yet, so when one lands only that
 // body changes and the rest of the addon is untouched. Two things are missing as
 // of r494, both on the text renderer.
+// issue tracked here: https://github.com/Scirra/Construct-feature-requests/issues/833
 //
 // 1. Reveal a given number of characters.
 //    The typewriter has to show the first N characters of a string that is being
@@ -35,9 +36,6 @@
 //    all. See docs/experimental-text-fix-review.md.
 //    Public equivalent would be: a way to read the wrapped lines, even just their
 //    lengths.
-//
-// Everything else this addon needs is public. UpdateRender was in here until
-// runtime.sdk.updateRender() covered it.
 
 const HOST_PLUGIN_IDS = ["Text", "Spritefont2"];
 
@@ -65,7 +63,7 @@ if (globalThis.C3 && globalThis.C3.Plugins) {
   if (!patchedAny) {
     console.warn(
       "[Animate Text] Neither the Text nor the Sprite Font plugin is in this " +
-        "project. The behavior only works on those two objects."
+        "project. The behavior only works on those two objects.",
     );
   }
 }
@@ -123,4 +121,3 @@ export function getWrappedLineTexts(iInst) {
   renderer.SetDrawMaxCharacterCount(previousCount);
   return lines;
 }
-

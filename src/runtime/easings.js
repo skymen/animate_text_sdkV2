@@ -6,6 +6,10 @@
 // elastic never left 1.0 so it faded nothing, easeTo rose sharper than anything
 // Construct has, and bouncePast overshot the end value, which out back is the
 // only Construct curve to do.
+
+// I am not sure this is public API, issue tracked here:
+// https://github.com/Scirra/Construct-feature-requests/issues/832
+
 const LEGACY_NAMES = new Map([
   ["swingfrom", "easeinback"],
   ["swingto", "easeoutback"],
@@ -29,7 +33,7 @@ export function getCustomEase(name) {
       globalThis.Ease.GetCustomRuntimeEaseNames().map((easeName) => [
         easeName.toLowerCase(),
         easeName,
-      ])
+      ]),
     );
   }
 
