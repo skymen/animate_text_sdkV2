@@ -17,9 +17,44 @@ import * as internals from "./engineInternals.js";
 const PROBE = "atprobe";
 const ROWS = "atrows";
 
+// Rebuilds the shape the typewriter actually produces: every character in its own
+// nested tags, which is what stops fragments merging and gives one fragment per
+// character instead of one per line.
+//   vary false  every character carries identical tag values, as after a fade ends
+//   vary true   values differ per character, as mid fade
+function perCharTags(plain, { vary = true } = {}) {
+  let out = "";
+  let i = 0;
+  for (const ch of plain) {
+    const offsety = vary ? (Math.sin(i * 0.7) * 6).toFixed(3) : "0";
+    const opacity = vary ? (50 + 50 * Math.sin(i * 0.3)).toFixed(2) : "100";
+    out +=
+      `[color=#ffcc00][offsety=${offsety}][opacity=${opacity}]` +
+      ch +
+      "[/opacity][/offsety][/color]";
+    i++;
+  }
+  return out;
+}
+
+const SENTENCE =
+  "The quick brown fox jumps over the lazy dog and then keeps going for a while";
+
 // Strings chosen to stress wrapping and the visible-character counting that the
 // typewriter's reveal index depends on.
 const CORPUS = [
+  // The cases that match what the addon really feeds GetNbNewlines.
+  ["typewriter mid fade", perCharTags(SENTENCE)],
+  ["typewriter settled", perCharTags(SENTENCE, { vary: false })],
+  ["typewriter with newline", perCharTags("first line here\nsecond line here and more text that wraps")],
+  ["typewriter with icon", perCharTags("before ") + "[icon=0]" + perCharTags(" after and more words to push this over a line")],
+  ["typewriter half tagged", perCharTags("tagged start here ") + "then plain text for the rest of this line and beyond"],
+  ["typewriter double spaces", perCharTags("two  spaces  between  every  word  here  to  see  the  wrap")],
+  ["typewriter trailing space at wrap", perCharTags("a line that ends with a space right at the wrap point      and then more")],
+  ["typewriter one long word", perCharTags("short Supercalifragilisticexpialidociousandthensomemore tail")],
+  ["typewriter cjk", perCharTags("これは日本語のテキストです。改行を確認します。これは日本語です。")],
+  ["typewriter emoji", perCharTags("emoji 👍🏽 and é combining marks mixed into a longer wrapping line")],
+
   ["plain wrap", "The quick brown fox jumps over the lazy dog and keeps running for quite a while longer"],
   ["short, no wrap", "no wrapping here"],
   ["single char", "x"],
@@ -33,7 +68,7 @@ const CORPUS = [
   ["double spaces", "double  spaces  between  every  word  here  to  see  what  wrap  does"],
   ["trailing spaces", "words with trailing space at the wrap point           and more after"],
   ["leading spaces", "     indented start of the line then a lot more text to force a wrap"],
-  ["per char tags", "[offsety=2]a[/offsety][offsety=4]b[/offsety][offsety=6]c[/offsety] [offsety=2]d[/offsety][offsety=4]e[/offsety]"],
+  ["per char tags, no wrap", "[offsety=2]a[/offsety][offsety=4]b[/offsety][offsety=6]c[/offsety] [offsety=2]d[/offsety][offsety=4]e[/offsety]"],
   ["tag spanning wrap", "[color=#ff0000]a long red run of text that should certainly wrap somewhere in the middle[/color]"],
   ["icon in text", "before [icon=0] after and then a lot more words to push this onto another line"],
   ["icon at wrap point", "aaaa bbbb cccc dddd eeee ffff gggg [icon=0] hhhh iiii jjjj kkkk"],
@@ -282,6 +317,7 @@ const api = {
         chars: result.visibleChars,
         internalLines: result.lines.length,
         tagRows: result.rowsFound,
+        tagFragments: result.tagFragments,
         mismatches: result.mismatches,
       });
     }
