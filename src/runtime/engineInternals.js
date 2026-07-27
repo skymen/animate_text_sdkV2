@@ -100,6 +100,12 @@ export function getWrappedLineTexts(iInst) {
   const renderer = getRendererText(iInst);
   if (!renderer) return [];
 
+  // The Text plugin stores the string on itself and only hands it to the
+  // renderer inside _UpdateTextSize, so reading the lines straight after setting
+  // .text would describe the previous string. Reading textWidth runs that update
+  // through public API. Sprite Font pushes on set, so this costs it nothing.
+  void iInst.textWidth;
+
   const previousCount = renderer.GetDrawMaxCharacterCount();
   renderer.SetDrawMaxCharacterCount(-1);
   renderer._UpdateTextMeasurements();
