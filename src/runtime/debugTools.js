@@ -43,7 +43,7 @@ const SENTENCE =
 // Strings chosen to stress wrapping and the visible-character counting that the
 // typewriter's reveal index depends on.
 const CORPUS = [
-  // The cases that match what the addon really feeds GetNbNewlines.
+  // The cases that match what the addon really feeds GetCharsEatenByWrap.
   ["typewriter mid fade", perCharTags(SENTENCE)],
   ["typewriter settled", perCharTags(SENTENCE, { vary: false })],
   ["typewriter with newline", perCharTags("first line here\nsecond line here and more text that wraps")],
@@ -185,8 +185,9 @@ function probeCharY(host, text, n) {
   return { y, fragments };
 }
 
+// characters the wrap ate before n, per the internal read
 function internalBreaks(inst, text, n) {
-  return inst.GetNbNewlines(n, text);
+  return inst.GetCharsEatenByWrap(n, text);
 }
 
 // Line index of character n, as the tag based approach would compute it.

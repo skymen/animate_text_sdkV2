@@ -497,35 +497,37 @@ export default function (parentClass) {
       this.SetTextInst(str);
     }
 
-    GetNbNewlines(nb, text) {
+    // Word wrap deletes the whitespace it breaks on, so those characters are in
+    // the string but never drawn, and the reveal index has to skip them. Counts
+    // the characters lost rather than the lines: a break on two spaces eats two.
+    GetCharsEatenByWrap(nb, text) {
       const previousText = this.instance.text;
       this.SetTextInst(text);
 
       let pureText = this.getTextWithNoTags(text).slice(0, nb + 1);
       const lines = internals.getWrappedLineTexts(this.instance);
 
-      let nbLines = 0;
+      let eaten = 0;
       if (lines.length > 1) {
         while (pureText.length > 0 && lines.length > 0) {
           const start = lines[0];
           if (!(pureText.startsWith(start) || start.startsWith(pureText))) break;
-          nbLines++;
           lines.shift();
-          pureText = pureText.slice(start.length).trimStart();
+          const rest = pureText.slice(start.length);
+          pureText = rest.trimStart();
+          eaten += rest.length - pureText.length;
         }
       }
 
-      nbLines -= pureText === "";
-
       this.SetTextInst(previousText);
-      return nbLines;
+      return eaten;
     }
 
     SetDrawMaxCharacterCount(nb, text = null) {
       this.scheduleMaxCharacterCount = null;
       if (text) {
         nb += 1;
-        nb -= this.GetNbNewlines(nb, text);
+        nb -= this.GetCharsEatenByWrap(nb, text);
       }
       this.scheduleMaxCharacterCount = nb;
     }
