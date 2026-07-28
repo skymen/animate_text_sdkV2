@@ -500,11 +500,15 @@ export default function (parentClass) {
     // Word wrap deletes the whitespace it breaks on, so those characters are in
     // the string but never drawn, and the reveal index has to skip them. Counts
     // the characters lost rather than the lines: a break on two spaces eats two.
-    GetCharsEatenByWrap(nb, text) {
+    // count is how many characters of the string the reveal has reached. Taking
+    // one more than that would see the eaten whitespace before the reveal gets
+    // to it, and hold the last character of every wrapped line back until the
+    // reveal had crossed the whole run.
+    GetCharsEatenByWrap(count, text) {
       const previousText = this.instance.text;
       this.SetTextInst(text);
 
-      let pureText = this.getTextWithNoTags(text).slice(0, nb + 1);
+      let pureText = this.getTextWithNoTags(text).slice(0, count);
       const lines = internals.getWrappedLineTexts(this.instance);
 
       let eaten = 0;

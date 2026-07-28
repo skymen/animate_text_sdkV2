@@ -42,6 +42,7 @@ npm run dev
 ## Examples Files
 | Description | Download |
 | --- | --- |
+| broken typewrite | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/broken%20typewrite.c3p) |
 | line-break-tests | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/line-break-tests.c3p) |
 | spritefontdeluxetemplate | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/spritefontdeluxetemplate.c3p) |
 | test-animated-icon | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/test-animated-icon.c3p) |

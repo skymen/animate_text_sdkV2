@@ -187,7 +187,7 @@ function probeCharY(host, text, n) {
 
 // characters the wrap ate before n, per the internal read
 function internalBreaks(inst, text, n) {
-  return inst.GetCharsEatenByWrap(n, text);
+  return inst.GetCharsEatenByWrap(n + 1, text);
 }
 
 // Line index of character n, as the tag based approach would compute it.
