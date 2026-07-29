@@ -8,5 +8,10 @@
     "added": "",
     "changed": "",
     "fixed": "The last character before a word wrap now fades in instead of popping in. The count of characters the wrap ate was taken one character past the reveal, so it saw the eaten whitespace early and held that character back until the reveal had crossed the whole run: one step for a single space, eleven for a run of eleven, by which time its fade had already finished.\nLine breaks with multiple eaten white texts now get properly counted"
+  },
+  "2.0.2.0": {
+    "added": "",
+    "changed": "",
+    "fixed": "Fixed a bug with the typewriter when multiple characters are eaten by the newline"
   }
 }

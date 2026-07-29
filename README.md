@@ -1,14 +1,14 @@
 <img src="./examples/cover.png" width="150" /><br>
 # Animate Text
 <i>A behavior that extends the animation capabilities of Spritefont and text</i> <br>
-### Version 2.0.1.0
+### Version 2.0.2.0
 
-[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.0.1.0.c3addon/skymen_Skymen_SpritefontDX-2.0.1.0.c3addon)
+[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.0.2.0.c3addon/skymen_Skymen_SpritefontDX-2.0.2.0.c3addon)
 <br>
 <sub> [See all releases](https://github.com/skymen/animate_text_sdkV2/releases) </sub> <br>
 
-#### What's New in 2.0.1.0
-- **Fixed:** Line breaks with multiple eaten white texts now get properly counted
+#### What's New in 2.0.2.0
+- **Fixed:** Fixed a bug with the typewriter when multiple characters are eaten by the newline
 
 <sub>[View full changelog](#changelog)</sub>
 
@@ -101,7 +101,11 @@ npm run dev
 ---
 ## Changelog
 
+**2.0.2.0**
+- **Fixed:** Fixed a bug with the typewriter when multiple characters are eaten by the newline
+
 **2.0.1.0**
+- **Fixed:** The last character before a word wrap now fades in instead of popping in. The count of characters the wrap ate was taken one character past the reveal, so it saw the eaten whitespace early and held that character back until the reveal had crossed the whole run: one step for a single space, eleven for a run of eleven, by which time its fade had already finished.
 - **Fixed:** Line breaks with multiple eaten white texts now get properly counted
 
 **2.0.0.0**
