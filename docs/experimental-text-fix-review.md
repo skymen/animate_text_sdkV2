@@ -1,37 +1,49 @@
 # Text rendering gaps in the SDK, and Experimental Text Fix (checked against r494)
 
-## What Animate Text still needs internals for
+## What Animate Text needs internals for: nothing
 
-Two things, both on the text renderer, both wrapped in `src/runtime/engineInternals.js`.
+It used to need two things, both on the text renderer, both wrapped in
+`src/runtime/engineInternals.js`. The `[hide]` BBCode tag replaces both, so that
+file and the `debugTools.js` harness built around it are gone, and the addon is
+now pure public SDK v2. The history is kept here because the reasoning is what
+justifies not going back.
 
 **Reveal a given number of characters.** The typewriter shows the first N
 characters of a string it rebuilds every tick, because the animation tags around
-each character change every frame. `SetDrawMaxCharacterCount` clips the draw
-without touching the layout, so the text does not reflow while it types.
+each character change every frame. `SetDrawMaxCharacterCount` clipped the draw
+without touching the layout, so the text did not reflow while it typed.
 
-The public alternative is `ITextInstance.typewriterText(str, duration)`, which the
-engine drives itself: it interpolates a character count from a start time to an end
-time, and cancels the moment the text is set again. That is one linear reveal of a
-fixed string. This addon needs per-character timing instead, a `[tw=wait]` before a
-character, a `[tw=pause]` that holds until an action resumes it, a per-character
-fade whose length and easing come from the typewriter parameters, and a `[tw=fn]`
-that calls into the event sheet partway through. None of that fits in a single
-duration, and rebuilding the string each tick would cancel it anyway.
+`[hide]` does the same thing from the public side: hidden text is laid out and
+advances the pen, it is simply not painted. Verified on r494 for both Text and
+Sprite Font, including that a partly hidden word does not rewrap, that a fully
+hidden word does not shift the words after it, and that icons, backgrounds,
+outlines and underlines are all suppressed along with the glyphs.
 
-What would close it: a `drawMaxCharacterCount` accessor on `ITextInstance` and
-`ISpriteFontInstance`.
+The other public alternative, `ITextInstance.typewriterText(str, duration)`, is
+still no use: the engine drives it itself, interpolating a character count from a
+start time to an end time, and it cancels the moment the text is set again. That is
+one linear reveal of a fixed string. This addon needs per-character timing instead,
+a `[tw=wait]` before a character, a `[tw=pause]` that holds until an action resumes
+it, a per-character fade whose length and easing come from the typewriter
+parameters, and a `[tw=fn]` that calls into the event sheet partway through. None of
+that fits in a single duration, and rebuilding the string each tick would cancel it
+anyway.
 
-**Read where word wrap broke the text.** That character count counts what the
-renderer draws. Word wrap consumes the space it breaks on, so the count drifts from
-the character index the addon tracks by one per wrapped line, and a wrapped
-paragraph reveals ahead of or behind the intended character. Correcting it means
-asking the renderer where the lines actually broke.
+**Read where word wrap broke the text.** This one does not need replacing, it
+stops existing. `SetDrawMaxCharacterCount` counted what the renderer *draws*, and
+word wrap consumes the space it breaks on, so the count drifted from the character
+index the addon tracks by one per wrapped line and a wrapped paragraph revealed
+ahead of or behind the intended character. `GetCharsEatenByWrap` corrected for that
+by reading the renderer's wrapped lines.
 
-The public surface gives text size and per-tag positions, but nothing that says
-where a line ends. `getTagPositionAndSize()` looks like a way in, since you can
-insert your own `[tag=]` marker and read back the y of the character you marked,
-then group characters by y to recover the lines. That was measured against the
-internal read, character by character, over 31 strings. It does not work, for two
+`[hide]` is placed in the source string, which is the index space the addon already
+works in, so there is no conversion to correct. Where the lines break stops
+mattering.
+
+Recorded because it cost a day to establish: the public `getTagPositionAndSize()`
+is *not* a way to recover the wrapped lines. Insert your own `[tag=]` marker, read
+back the y of the character you marked, group characters by y. That was measured
+against the internal read, character by character, over 31 strings. It fails for two
 reasons that cannot be tuned away.
 
 *The y it returns is the rendered position, not the line.* Same sentence, same
@@ -51,10 +63,17 @@ so they cannot be probed. With `"top\n\n\nbottom"` the renderer reports four lin
 and tagging finds two, and every probe of a space that word wrap trimmed comes back
 empty.
 
-What would close it: any read access to the wrapped lines, even just their lengths.
+So if `[hide]` ever stops reserving layout space, the fallback is
+`SetDrawMaxCharacterCount` plus `_wrappedText` again, not tag probing.
 
-Nothing else is internal. `UpdateRender` was here until `runtime.sdk.updateRender()`
-replaced it.
+`UpdateRender` was the third internal, until `runtime.sdk.updateRender()` replaced
+it. Nothing calls that now either: setting `.text` marks its own redraw, and the
+only reason the addon called it was that the internal character-count setter did
+not.
+
+Feature request [#833](https://github.com/Scirra/Construct-feature-requests/issues/833)
+asked for a `drawMaxCharacterCount` accessor and a wrapped-lines getter. Neither is
+needed any more.
 
 ## Does Experimental Text Fix still help?
 

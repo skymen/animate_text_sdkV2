@@ -3,10 +3,6 @@ import AddonTypeMap from "../../template/addonTypeMap.js";
 import { easingNames } from "../acesShared.js";
 import { getEasingFunction } from "./easings.js";
 import { lerp, unlerp, rgb255ToHex, SFDXUtilsFunctions } from "./utils.js";
-import * as internals from "./engineInternals.js";
-// TEMPORARY debug tooling. Delete this import and the registerForDebug call in
-// the constructor, and delete debugTools.js, to remove it.
-import { registerForDebug } from "./debugTools.js";
 
 const DEFAULT_ALIASES = [
   {
@@ -34,7 +30,6 @@ const DEFAULT_ALIASES = [
 const CONDITIONAL_TAGS = ["hide", "b", "i", "u", "s", "stroke"];
 const SOLO_TAGS = ["icon"];
 const TIMING_TAGS = ["wait", "fade", "type", "pause"];
-const FRAGMENT_WORTH = { icon: 1 };
 const SFDX_TAG_ALIASES = [
   "sfdx",
   "anim",
@@ -84,8 +79,6 @@ export default function (parentClass) {
       this.LastLetter = "";
       this.animated = false;
       this.SetTextCall = false;
-      this.scheduleMaxCharacterCount = null;
-      this.additionalFragments = [];
 
       this.linkedDictionnaryUID = -1;
       this.linkedDictionnary = undefined;
@@ -109,7 +102,6 @@ export default function (parentClass) {
       }
 
       this._setTicking2(true);
-      registerForDebug(this); // TEMPORARY, see the import
     }
 
     _trigger(method) {
@@ -127,7 +119,7 @@ export default function (parentClass) {
     off(tag, callback) {
       if (this.events[tag]) {
         this.events[tag] = this.events[tag].filter(
-          (event) => event.callback !== callback
+          (event) => event.callback !== callback,
         );
       }
     }
@@ -209,7 +201,7 @@ export default function (parentClass) {
                   tag +
                     " is not a recognised typewriter parameter for " +
                     mode +
-                    "."
+                    ".",
                 );
                 break;
             }
@@ -241,7 +233,9 @@ export default function (parentClass) {
           return 1;
         case "color":
           return rgbToHex(
-            this.isTextHost() ? this.instance.fontColor : this.instance.colorRgb
+            this.isTextHost()
+              ? this.instance.fontColor
+              : this.instance.colorRgb,
           );
         case "background":
           return "#FFFFFF";
@@ -263,12 +257,6 @@ export default function (parentClass) {
       return SOLO_TAGS.includes(tag);
     }
 
-    TagIsWorthNbFragments(tag) {
-      return Object.prototype.hasOwnProperty.call(FRAGMENT_WORTH, tag)
-        ? FRAGMENT_WORTH[tag]
-        : 0;
-    }
-
     GetTwEasingFunction() {
       return getEasingFunction(this.TWEasing);
     }
@@ -283,7 +271,7 @@ export default function (parentClass) {
           "[Animate Text] This behavior only works on Text and Sprite Font " +
             'objects. It is doing nothing on "' +
             this.instance.objectType.name +
-            '".'
+            '".',
         );
         this._setTicking2(false);
         return;
@@ -296,7 +284,7 @@ export default function (parentClass) {
       // Resolve the linked dictionary after a savegame load, once UIDs exist.
       if (this.linkedDictionnaryUID != -1 && !this.linkedDictionnary) {
         const dictInst = this.runtime.getInstanceByUid(
-          this.linkedDictionnaryUID
+          this.linkedDictionnaryUID,
         );
         if (dictInst) this.linkedDictionnary = dictInst.getDataMap();
       }
@@ -320,6 +308,7 @@ export default function (parentClass) {
 
       if (this.typewriterActive) {
         let charIndex = 0;
+        let hideOpen = false;
         const easingFunction = this.GetTwEasingFunction();
         this.parsedText.forEach((el) => {
           for (let i = 0; i < el[1].length; i++) {
@@ -334,7 +323,7 @@ export default function (parentClass) {
               this.TWTime >= this.TWData.start[charIndex][0] &&
               Object.prototype.hasOwnProperty.call(
                 this.TWData.data[charIndex],
-                "pause"
+                "pause",
               )
             ) {
               this.typewriterPaused = true;
@@ -345,7 +334,7 @@ export default function (parentClass) {
               this.TWTime >= this.TWData.start[charIndex][0] &&
               Object.prototype.hasOwnProperty.call(
                 this.TWData.data[charIndex],
-                "fn"
+                "fn",
               )
             ) {
               let fnData = this.TWData.data[charIndex].fn.split(" ");
@@ -367,21 +356,23 @@ export default function (parentClass) {
                     this.TWData.start[charIndex][0],
                     this.TWData.start[charIndex][1],
                     this.TWTime,
-                    true
-                  )
-                )
+                    true,
+                  ),
+                ),
               );
             });
 
+            const revealed =
+              charIndex <= this.LastLetterID ||
+              (!this.typewriterPaused &&
+                this.TWTime >= this.TWData.start[charIndex][0]);
+            if (!revealed && !hideOpen) {
+              str += "[hide]";
+              hideOpen = true;
+            }
+
             let end = "";
-            let tagKeys = Object.keys(tags);
-            // Tags worth extra fragments must come last in the list.
-            tagKeys.sort((a, b) => {
-              return (
-                this.TagIsWorthNbFragments(a) - this.TagIsWorthNbFragments(b)
-              );
-            });
-            tagKeys.forEach((tag) => {
+            Object.keys(tags).forEach((tag) => {
               if (!TIMING_TAGS.includes(tag)) {
                 if (!this.IsConditionalTag(tag) || tags[tag]) {
                   str += "[" + tag + "=" + tags[tag] + "]";
@@ -421,18 +412,9 @@ export default function (parentClass) {
           }
         });
 
-        let offset = 0;
-        this.additionalFragments.forEach((frag) => {
-          if (frag.rawId > this.LastLetterID) {
-            return;
-          }
-          offset = frag.offset;
-        });
-
-        this.SetDrawMaxCharacterCount(this.LastLetterID + offset, str);
+        if (hideOpen) str += "[/hide]";
 
         if (this.TWTime >= this.TWData.start[this.TWData.start.length - 1][1]) {
-          this.SetDrawMaxCharacterCount(-1);
           this._trigger("onTwStop");
           this.typewriterActive = false;
         }
@@ -497,59 +479,8 @@ export default function (parentClass) {
       this.SetTextInst(str);
     }
 
-    // Word wrap deletes the whitespace it breaks on, so those characters are in
-    // the string but never drawn, and the reveal index has to skip them. Counts
-    // the characters lost rather than the lines: a break on two spaces eats two.
-    // count is how many characters of the string the reveal has reached. Taking
-    // one more than that would see the eaten whitespace before the reveal gets
-    // to it, and hold the last character of every wrapped line back until the
-    // reveal had crossed the whole run.
-    GetCharsEatenByWrap(count, text) {
-      const previousText = this.instance.text;
-      this.SetTextInst(text);
-
-      let pureText = this.getTextWithNoTags(text).slice(0, count);
-      const lines = internals.getWrappedLineTexts(this.instance);
-
-      let eaten = 0;
-      if (lines.length > 1) {
-        while (pureText.length > 0 && lines.length > 0) {
-          const start = lines[0];
-          if (!(pureText.startsWith(start) || start.startsWith(pureText))) break;
-          lines.shift();
-          const rest = pureText.slice(start.length);
-          pureText = rest.trimStart();
-          eaten += rest.length - pureText.length;
-        }
-      }
-
-      this.SetTextInst(previousText);
-      return eaten;
-    }
-
-    SetDrawMaxCharacterCount(nb, text = null) {
-      this.scheduleMaxCharacterCount = null;
-      if (text) {
-        nb += 1;
-        nb -= this.GetCharsEatenByWrap(nb, text);
-      }
-      this.scheduleMaxCharacterCount = nb;
-    }
-
     SetTextInst(str) {
       this.instance.text = str;
-      if (
-        this.scheduleMaxCharacterCount != null &&
-        this.scheduleMaxCharacterCount !==
-          internals.getDrawMaxCharacterCount(this.instance)
-      ) {
-        internals.setDrawMaxCharacterCount(
-          this.instance,
-          this.scheduleMaxCharacterCount
-        );
-        this.runtime.sdk.updateRender();
-        this.scheduleMaxCharacterCount = null;
-      }
     }
 
     StartTypewriter(text, silent = false) {
@@ -567,7 +498,6 @@ export default function (parentClass) {
       this.SetTextCall = true;
       this.text = this.getTextWithNoTW(text);
       this.parseText();
-      this.SetDrawMaxCharacterCount(0);
       this.LastLetterID = -1;
       this.typewriterActive = true;
       this.animated = true;
@@ -576,34 +506,6 @@ export default function (parentClass) {
       this.curTypedWidth = "";
       this.curTypedHeight = "";
       let pureText = this.getTextWithNoTags(this.text);
-
-      // Where a tag adds fragments beyond its own characters, so the draw
-      // character count can be offset by the right amount.
-      this.additionalFragments = [];
-      let curFragmentOffset = 0;
-      let curFragmentId = 0;
-      this.parsedText.forEach((el) => {
-        if (el[1].length === 0) {
-          return;
-        }
-        let curWorth = 0;
-
-        el[0].forEach((tag) => {
-          curWorth += this.TagIsWorthNbFragments(tag[0]);
-        });
-
-        if (curWorth > 0) {
-          this.additionalFragments.push({
-            rawId: curFragmentId,
-            id: curFragmentId - curFragmentOffset,
-            offset: curFragmentOffset + curWorth,
-            worth: curWorth,
-          });
-          curFragmentOffset += curWorth;
-        }
-
-        curFragmentId += el[1].length;
-      });
 
       let start = 0;
       this.TWData = {
@@ -726,7 +628,6 @@ export default function (parentClass) {
       }
 
       if (i === this.TWData.data.length) {
-        this.SetDrawMaxCharacterCount(-1);
         this._trigger("onTwStop");
         this.typewriterActive = false;
       } else {
@@ -784,7 +685,7 @@ export default function (parentClass) {
         if (found) {
           found = Object.prototype.hasOwnProperty.call(
             this.aliasFunctions,
-            name
+            name,
           );
         }
         if (found) {
@@ -835,10 +736,15 @@ export default function (parentClass) {
             this.AnimFunctions[tag] = fn;
           }
         } else {
-          const ctorArgs = [Function, "t", "i", this.GetBody(tag.toLowerCase())];
+          const ctorArgs = [
+            Function,
+            "t",
+            "i",
+            this.GetBody(tag.toLowerCase()),
+          ];
           this.AnimFunctions[tag] = new (Function.bind.apply(
             Function,
-            ctorArgs
+            ctorArgs,
           ))();
         }
       }
@@ -856,7 +762,6 @@ export default function (parentClass) {
       if (typeof this.linkedDictionnary !== "undefined") {
         this.replaceVars();
       }
-      this.SetDrawMaxCharacterCount(-1);
 
       var text = this.text;
 
@@ -872,10 +777,17 @@ export default function (parentClass) {
             if (this.IsSoloTag(a[0])) {
               text = text.replace(
                 match[0],
-                "[sfdx=" + a[0] + ' "' + a[1] + '"][sfdx=scale 0] [/sfdx][/sfdx]'
+                "[sfdx=" +
+                  a[0] +
+                  ' "' +
+                  a[1] +
+                  '"][sfdx=scale 0] [/sfdx][/sfdx]',
               );
             } else {
-              text = text.replace(match[0], "[sfdx=" + a[0] + ' "' + a[1] + '"]');
+              text = text.replace(
+                match[0],
+                "[sfdx=" + a[0] + ' "' + a[1] + '"]',
+              );
             }
           }
         } else {
@@ -894,9 +806,9 @@ export default function (parentClass) {
       text = text.replace(
         new RegExp(
           "\\[sfdx=(" + SOLO_TAGS.join("|") + ")(\\s[^\\]]*)?\\]\\[/sfdx\\]",
-          "gi"
+          "gi",
         ),
-        "[sfdx=$1$2][sfdx=scale 0] [/sfdx][/sfdx]"
+        "[sfdx=$1$2][sfdx=scale 0] [/sfdx][/sfdx]",
       );
 
       this.text = text;
@@ -1085,7 +997,7 @@ export default function (parentClass) {
 
       if (this.linkedDictionnaryUID != -1 && !this.linkedDictionnary) {
         const dictInst = this.runtime.getInstanceByUid(
-          this.linkedDictionnaryUID
+          this.linkedDictionnaryUID,
         );
         if (dictInst) this.linkedDictionnary = dictInst.getDataMap();
       }
