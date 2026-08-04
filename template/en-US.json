@@ -6,7 +6,7 @@
       "skymen_skymen_spritefontdx": {
         "name": "Animate Text",
         "description": "A behavior that extends the animation capabilities of Spritefont and text",
-        "help-url": "https://www.construct.net",
+        "help-url": "https://www.construct.net/en/make-games/addons/324/animate-text/documentation",
         "aceCategories": {
           "general": "General",
           "typewriter": "Typewriter"

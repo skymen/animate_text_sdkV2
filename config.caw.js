@@ -15,8 +15,8 @@ export const name = "Animate Text";
 export const version = _version;
 export const minConstructVersion = undefined;
 export const author = "skymen";
-export const website = "https://www.construct.net";
-export const documentation = "https://www.construct.net";
+export const website = "https://www.construct.net/en/make-games/addons/324/animate-text";
+export const documentation = "https://www.construct.net/en/make-games/addons/324/animate-text/documentation";
 export const description =
   "A behavior that extends the animation capabilities of Spritefont and text";
 export const category = ADDON_CATEGORY.GENERAL;

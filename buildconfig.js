@@ -20,7 +20,7 @@ export const disableWarnings = false;
 export const terserValidation = "error";
 
 export const publishConfig = {
-  addonUrl: "", // e.g., "https://www.construct.net/en/make-games/addons/111/my-addon"
+  addonUrl: "https://www.construct.net/en/make-games/addons/324/animate-text", // e.g., "https://www.construct.net/en/make-games/addons/111/my-addon"
   itchioPage: "", // Format: "username/page-id" (taken from https://username.itch.io/page-id)
   autoGenReadme: true,
 };
