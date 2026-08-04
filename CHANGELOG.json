@@ -13,5 +13,10 @@
     "added": "",
     "changed": "",
     "fixed": "Fixed a bug with the typewriter when multiple characters are eaten by the newline"
+  },
+  "2.1.0.0": {
+    "added": "",
+    "changed": "The typewriter now hides the characters it has not typed yet with the [hide] BBCode tag, instead of telling the renderer how many characters to draw.",
+    "fixed": "Character counting around word wrap cannot drift any more by design"
   }
 }

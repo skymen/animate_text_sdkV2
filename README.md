@@ -1,14 +1,15 @@
 <img src="./examples/cover.png" width="150" /><br>
 # Animate Text
 <i>A behavior that extends the animation capabilities of Spritefont and text</i> <br>
-### Version 2.0.2.0
+### Version 2.1.0.0
 
-[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.0.2.0.c3addon/skymen_Skymen_SpritefontDX-2.0.2.0.c3addon)
+[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.1.0.0.c3addon/skymen_Skymen_SpritefontDX-2.1.0.0.c3addon)
 <br>
 <sub> [See all releases](https://github.com/skymen/animate_text_sdkV2/releases) </sub> <br>
 
-#### What's New in 2.0.2.0
-- **Fixed:** Fixed a bug with the typewriter when multiple characters are eaten by the newline
+#### What's New in 2.1.0.0
+- **Changed:** The typewriter now hides the characters it has not typed yet with the [hide] BBCode tag, instead of telling the renderer how many characters to draw.
+- **Fixed:** Character counting around word wrap cannot drift any more by design
 
 <sub>[View full changelog](#changelog)</sub>
 
@@ -102,6 +103,10 @@ npm run dev
 
 ---
 ## Changelog
+
+**2.1.0.0**
+- **Changed:** The typewriter now hides the characters it has not typed yet with the [hide] BBCode tag, instead of telling the renderer how many characters to draw.
+- **Fixed:** Character counting around word wrap cannot drift any more by design
 
 **2.0.2.0**
 - **Fixed:** Fixed a bug with the typewriter when multiple characters are eaten by the newline
