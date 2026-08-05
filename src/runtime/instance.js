@@ -90,7 +90,7 @@ export default function (parentClass) {
       // live functions.
       this.sourceText = "";
       this.sourceMode = null;
-      this.pendingRestore = null;
+      this._onAfterLoad = null;
 
       if (!this.behaviorType._sfdxAliasFunctions) {
         this.behaviorType._sfdxAliasFunctions = {};
@@ -179,7 +179,7 @@ export default function (parentClass) {
         if (mode.trim() === "" || paramA.length === 0) return;
         let tag = paramA.shift().toLowerCase();
         if (tag.trim() === "" || paramA.length === 0) return;
-        let value = paramA.join();
+        let value = paramA.join(" ");
 
         if (this.isANumber(value)) value = parseFloat(value);
 
@@ -275,18 +275,6 @@ export default function (parentClass) {
         );
         this._setTicking2(false);
         return;
-      }
-
-      if (this.pendingRestore) {
-        this.applyPendingRestore();
-      }
-
-      // Resolve the linked dictionary after a savegame load, once UIDs exist.
-      if (this.linkedDictionnaryUID != -1 && !this.linkedDictionnary) {
-        const dictInst = this.runtime.getInstanceByUid(
-          this.linkedDictionnaryUID,
-        );
-        if (dictInst) this.linkedDictionnary = dictInst.getDataMap();
       }
 
       // If the host's own Set Text action was called, stop animating.
@@ -397,7 +385,7 @@ export default function (parentClass) {
               this.LastLetterID < charIndex
             ) {
               this.LastLetterID = charIndex;
-              this.LastLetter = this.getTextWithNoTags(str)[charIndex];
+              this.LastLetter = innerText;
               this._trigger("onLetterTyped");
               word = true;
               this.curTypedWidth = str;
@@ -636,23 +624,11 @@ export default function (parentClass) {
     }
 
     getTextWithNoTags(text) {
-      let regex = /\[\/?((?!\/?tw|fn|text)[^\]]*)(=[^\]]*)?\]/gi;
-      text = text.replace(regex, "");
-      regex = /\[\/?((?!\/?tw)[^\]]*)(=[^\]]*)?\]/gi;
-      var match;
-      while ((match = regex.exec(text)) !== null) {
-        let a = match[1].split("=");
-        let b = a[1] || "";
-        let c = b.split(" ");
-        let len = parseInt(c[1]) || 0;
-        let str2 = "";
-        for (let i = 0; i < len; i++) {
-          str2 += "0";
-        }
-        text = text.replace(match[0], str2);
-        regex.lastIndex = 0;
-      }
-      return text;
+      text = text.replace(/\[\/?((?!\/?tw|fn|text)[^\]]*)(=[^\]]*)?\]/gi, "");
+      return text.replace(/\[\/?((?!\/?tw)[^\]]*)(=[^\]]*)?\]/gi, (m, tag) => {
+        const len = parseInt((tag.split("=")[1] || "").split(" ")[1]) || 0;
+        return "0".repeat(len);
+      });
     }
 
     getTextWithNoTW(text) {
@@ -766,39 +742,24 @@ export default function (parentClass) {
       var text = this.text;
 
       // Matches tags that are neither sfdx nor text
-      var regex = /\[\/?((?!\/?sfdx|text|fn)[^\]]*)\]/gi;
-      var match;
-      while ((match = regex.exec(text)) !== null) {
-        if (!match[0].startsWith("[/")) {
-          let a = match[1].split("=");
+      text = text.replace(
+        /\[\/?((?!\/?sfdx|text|fn)[^\]]*)\]/gi,
+        (whole, tag) => {
+          if (whole.startsWith("[/")) {
+            return this.IsSoloTag(tag) ? "" : "[/sfdx]";
+          }
+          const a = tag.split("=");
           if (SFDX_TAG_ALIASES.includes(a[0].toLowerCase())) {
-            text = text.replace(match[0], "[sfdx=" + a[1] + "]");
-          } else {
-            if (this.IsSoloTag(a[0])) {
-              text = text.replace(
-                match[0],
-                "[sfdx=" +
-                  a[0] +
-                  ' "' +
-                  a[1] +
-                  '"][sfdx=scale 0] [/sfdx][/sfdx]',
-              );
-            } else {
-              text = text.replace(
-                match[0],
-                "[sfdx=" + a[0] + ' "' + a[1] + '"]',
-              );
-            }
+            return "[sfdx=" + a[1] + "]";
           }
-        } else {
-          if (!this.IsSoloTag(match[1])) {
-            text = text.replace(match[0], "[/sfdx]");
-          } else {
-            text = text.replace(match[0], "");
+          if (this.IsSoloTag(a[0])) {
+            return (
+              "[sfdx=" + a[0] + ' "' + a[1] + '"][sfdx=scale 0] [/sfdx][/sfdx]'
+            );
           }
-        }
-        regex.lastIndex = 0;
-      }
+          return "[sfdx=" + a[0] + ' "' + a[1] + '"]';
+        },
+      );
 
       // A solo tag is only emitted alongside a character, so one with no body
       // renders nothing. Give it the same zero width placeholder the literal
@@ -986,16 +947,27 @@ export default function (parentClass) {
       this.TWEasing = o.TWEasing;
       this.linkedDictionnaryUID = o.linkedDictionnaryUID;
       this.linkedDictionnary = undefined;
-      // Rebuilt rather than restored, on the next tick so the linked
-      // dictionary's UID can be resolved first.
-      this.pendingRestore = o;
+      this._removeAfterLoad();
+      this._onAfterLoad = () => {
+        this._removeAfterLoad();
+        this.applyLoadedState(o);
+      };
+      this.runtime.addEventListener("afterload", this._onAfterLoad);
     }
 
-    applyPendingRestore() {
-      const o = this.pendingRestore;
-      this.pendingRestore = null;
+    _removeAfterLoad() {
+      if (!this._onAfterLoad) return;
+      this.runtime.removeEventListener("afterload", this._onAfterLoad);
+      this._onAfterLoad = null;
+    }
 
-      if (this.linkedDictionnaryUID != -1 && !this.linkedDictionnary) {
+    _release() {
+      this._removeAfterLoad();
+      super._release();
+    }
+
+    applyLoadedState(o) {
+      if (this.linkedDictionnaryUID != -1) {
         const dictInst = this.runtime.getInstanceByUid(
           this.linkedDictionnaryUID,
         );

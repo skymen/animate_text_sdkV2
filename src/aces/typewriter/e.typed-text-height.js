@@ -11,7 +11,7 @@ export const expose = true;
 
 export default function () {
   const inst = this.instance;
-  if (!this.isTextHost() && !this.isSpriteFontHost()) return 0;
+  if (!this.isSupportedHost()) return 0;
   if (!this.typewriterActive) return inst.textHeight;
 
   const previous = inst.text;
