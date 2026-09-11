@@ -59,6 +59,7 @@ npm run dev
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | spritefontdeluxetemplate | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/spritefontdeluxetemplate.c3p) |
 | test-animated-icon       | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/test-animated-icon.c3p)       |
+| variables-and-functions  | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/variables-and-functions.c3p)  |
 
 ---
 
