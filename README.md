@@ -10,7 +10,7 @@
 #### What's New in 2.2.0.0
 - **Added:** Link Dictionary now also accepts a JSON object. [var=] and [text=] then take a path in the JSON plugin's format, with dots between keys and numbers for array indices, e.g. [var=player.skills.0.name].
 - **Fixed:** The Typewriter Params property and Set Typewriter Params action described a 'value [a/x/y/o]' syntax that does not exist. The description is now more accurate.
-- **Fixed:** A [var=] value containing \$& or \$` was inserted with those sequences interpreted instead of literally.
+- **Fixed:** A [var=] value containing \$ & or \$ ` was inserted with those sequences interpreted instead of literally.
 
 <sub>[View full changelog](#changelog)</sub>
 
