@@ -1,6 +1,9 @@
 <img src="./examples/cover.png" width="150" /><br>
+
 # Animate Text
+
 <i>A behavior that extends the animation capabilities of Spritefont and text</i> <br>
+
 ### Version 2.2.0.0
 
 [<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.2.0.0.c3addon/skymen_Skymen_SpritefontDX-2.2.0.0.c3addon)
@@ -8,28 +11,34 @@
 <sub> [See all releases](https://github.com/skymen/animate_text_sdkV2/releases) </sub> <br>
 
 #### What's New in 2.2.0.0
+
 - **Added:** Link Dictionary now also accepts a JSON object. [var=] and [text=] then take a path in the JSON plugin's format, with dots between keys and numbers for array indices, e.g. [var=player.skills.0.name].
 - **Fixed:** The Typewriter Params property and Set Typewriter Params action described a 'value [a/x/y/o]' syntax that does not exist. The description is now more accurate.
-- **Fixed:** A [var=] value containing   $ &   or   $ `   was inserted with those sequences interpreted instead of literally.
+- **Fixed:** A [var=] value containing $ & or $ ` was inserted with those sequences interpreted instead of literally.
 
 <sub>[View full changelog](#changelog)</sub>
 
 ---
+
 <b><u>Author:</u></b> skymen <br>
-<b>[Construct Addon Page](https://www.construct.net/en/make-games/addons/324/animate-text)</b>  <br>
-<b>[Addon Website](https://www.construct.net/en/make-games/addons/324/animate-text)</b>  <br>
-<b>[Documentation](https://www.construct.net/en/make-games/addons/324/animate-text/documentation)</b>  <br>
+<b>[Construct Addon Page](https://www.construct.net/en/make-games/addons/324/animate-text)</b> <br>
+<b>[Addon Website](https://www.construct.net/en/make-games/addons/324/animate-text)</b> <br>
+<b>[Documentation](https://www.construct.net/en/make-games/addons/324/animate-text/documentation)</b> <br>
 <sub>Made using [CAW](https://marketplace.visualstudio.com/items?itemName=skymen.caw) </sub><br>
 
 ## Table of Contents
+
 - [Usage](#usage)
 - [Examples Files](#examples-files)
 - [Properties](#properties)
 - [Actions](#actions)
 - [Conditions](#conditions)
 - [Expressions](#expressions)
+
 ---
+
 ## Usage
+
 To build the addon, run the following commands:
 
 ```
@@ -45,71 +54,79 @@ npm run dev
 ```
 
 ## Examples Files
-| Description | Download |
-| --- | --- |
+
+| Description              | Download                                                                                                                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | spritefontdeluxetemplate | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/spritefontdeluxetemplate.c3p) |
-| test-animated-icon | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/test-animated-icon.c3p) |
+| test-animated-icon       | [<img src="https://placehold.co/120x30/4493f8/FFF?text=Download&font=montserrat" width="120"/>](https://github.com/skymen/animate_text_sdkV2/raw/refs/heads/main/examples/test-animated-icon.c3p)       |
 
 ---
+
 ## Properties
-| Property Name | Description | Type |
-| --- | --- | --- |
+
+| Property Name     | Description                                                                                                           | Type     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------- | -------- |
 | Typewriter Params | Separated by ';'. 'value <tag> <value>' (e.g. value offsety -10; value opacity 0) or 'duration [type/fade] <seconds>' | longtext |
-| Typewriter Easing | The interpolation method used to ease the fading | combo |
-| Custom Easing | Set an easing by name, or use Easings created using C3's easings editor | text |
-| Default Aliases | If checked, the behavior will automatically add default alias functions (wave, shake, swing) | check |
-
+| Typewriter Easing | The interpolation method used to ease the fading                                                                      | combo    |
+| Custom Easing     | Set an easing by name, or use Easings created using C3's easings editor                                               | text     |
+| Default Aliases   | If checked, the behavior will automatically add default alias functions (wave, shake, swing)                          | check    |
 
 ---
+
 ## Actions
-| Action | Description | Params
-| --- | --- | --- |
-| Link Dictionary / JSON | Link a Dictionary or JSON object for holding the vars used by [var=] and [text=] tags. With a JSON, use a dot path like player.skills.0.name | Object             *(object)* <br> |
-| Set Function Animation alias | Set a function animation alias | Name             *(string)* <br>Params             *(string)* <br>Body             *(string)* <br> |
-| Set Text | Set the text, after parsing it | Text             *(string)* <br> |
-| Pause Typewriter | Pause the typewriter |  |
-| Resume Typewriter | Resume the typewriter |  |
-| Set Typewriter Easing (by name) | Set the typewriter easing (by name) | Easing             *(string)* <br> |
-| Set Typewriter Easing | Set the typewriter easing | Easing             *(combo)* <br> |
-| Set Typewriter Params | Set the typewriter params: the starting values letters fade in from, the delay between letters and how long each fade takes | Params             *(string)* <br> |
-| Skip Typewriter | Skip the typewriter | Mode             *(combo)* <br> |
-| Typewrite | Typewrite the text | Text             *(string)* <br> |
 
+| Action                          | Description                                                                                                                                  | Params                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Link Dictionary / JSON          | Link a Dictionary or JSON object for holding the vars used by [var=] and [text=] tags. With a JSON, use a dot path like player.skills.0.name | Object _(object)_ <br>                                         |
+| Set Function Animation alias    | Set a function animation alias                                                                                                               | Name _(string)_ <br>Params _(string)_ <br>Body _(string)_ <br> |
+| Set Text                        | Set the text, after parsing it                                                                                                               | Text _(string)_ <br>                                           |
+| Pause Typewriter                | Pause the typewriter                                                                                                                         |                                                                |
+| Resume Typewriter               | Resume the typewriter                                                                                                                        |                                                                |
+| Set Typewriter Easing (by name) | Set the typewriter easing (by name)                                                                                                          | Easing _(string)_ <br>                                         |
+| Set Typewriter Easing           | Set the typewriter easing                                                                                                                    | Easing _(combo)_ <br>                                          |
+| Set Typewriter Params           | Set the typewriter params: the starting values letters fade in from, the delay between letters and how long each fade takes                  | Params _(string)_ <br>                                         |
+| Skip Typewriter                 | Skip the typewriter                                                                                                                          | Mode _(combo)_ <br>                                            |
+| Typewrite                       | Typewrite the text                                                                                                                           | Text _(string)_ <br>                                           |
 
 ---
+
 ## Conditions
-| Condition | Description | Params
-| --- | --- | --- |
-| Is Typing | Check if the typewriter is typing |  |
-| On letter typed | Triggered when a letter is typed |  |
-| On typewriter pause | Triggered when the typewriter pauses |  |
-| On typewriter resume | Triggered when the typewriter resumes |  |
-| On typewriter start | Triggered when the typewriter starts |  |
-| On typewriter stop | Triggered when the typewriter stops |  |
 
+| Condition            | Description                           | Params |
+| -------------------- | ------------------------------------- | ------ |
+| Is Typing            | Check if the typewriter is typing     |        |
+| On letter typed      | Triggered when a letter is typed      |        |
+| On typewriter pause  | Triggered when the typewriter pauses  |        |
+| On typewriter resume | Triggered when the typewriter resumes |        |
+| On typewriter start  | Triggered when the typewriter starts  |        |
+| On typewriter stop   | Triggered when the typewriter stops   |        |
 
 ---
+
 ## Expressions
-| Expression | Description | Return Type | Params
-| --- | --- | --- | --- |
-| c2StrToC3Str | EXPERIMENTAL: Tries to rewrite a SFDX C2 text string into a C3 one | string | Text *(string)* <br> | 
-| lastLetterId | Get the id of the last letter typed | number |  | 
-| lastLetter | Get the last letter typed | string |  | 
-| twEasing | Get the easing used by the typewriter | string |  | 
-| twParams | Get the parameters used by the typewriter | string |  | 
-| typedTextHeight | Get the height of the typed text | number |  | 
-| typedTextWidth | Get the width of the typed text | number |  | 
 
+| Expression      | Description                                                        | Return Type | Params               |
+| --------------- | ------------------------------------------------------------------ | ----------- | -------------------- |
+| c2StrToC3Str    | EXPERIMENTAL: Tries to rewrite a SFDX C2 text string into a C3 one | string      | Text _(string)_ <br> |
+| lastLetterId    | Get the id of the last letter typed                                | number      |                      |
+| lastLetter      | Get the last letter typed                                          | string      |                      |
+| twEasing        | Get the easing used by the typewriter                              | string      |                      |
+| twParams        | Get the parameters used by the typewriter                          | string      |                      |
+| typedTextHeight | Get the height of the typed text                                   | number      |                      |
+| typedTextWidth  | Get the width of the typed text                                    | number      |                      |
 
 ---
+
 ## Changelog
 
 **2.2.0.0**
+
 - **Added:** Link Dictionary now also accepts a JSON object. [var=] and [text=] then take a path in the JSON plugin's format, with dots between keys and numbers for array indices, e.g. [var=player.skills.0.name].
 - **Fixed:** The Typewriter Params property and Set Typewriter Params action described a 'value [a/x/y/o]' syntax that does not exist. The description is now more accurate.
-- **Fixed:** A [var=] value containing   $ &   or   $ `   was inserted with those sequences interpreted instead of literally.
+- **Fixed:** A [var=] value containing $ & or $ ` was inserted with those sequences interpreted instead of literally.
 
 **2.1.1.0**
+
 - **Changed:** Save states are rebuilt on the runtime's afterload event instead of on the tick after loading, so [var=] tags resolve for anything that runs in between, such as an action on an On load complete event.
 - **Changed:** The typewriter does less work per typed letter, and tag parsing makes one pass instead of rescanning the text after every tag it rewrites.
 - **Fixed:** The LastLetter expression returned nothing for text pulled in by [text=] or [fn=] when the value contained a [.
@@ -118,17 +135,21 @@ npm run dev
 - **Fixed:** The C2 converter recognises the colour name indianred again.
 
 **2.1.0.0**
+
 - **Changed:** The typewriter now hides the characters it has not typed yet with the [hide] BBCode tag, instead of telling the renderer how many characters to draw.
 - **Fixed:** Character counting around word wrap cannot drift any more by design
 
 **2.0.2.0**
+
 - **Fixed:** Fixed a bug with the typewriter when multiple characters are eaten by the newline
 
 **2.0.1.0**
+
 - **Fixed:** The last character before a word wrap now fades in instead of popping in. The count of characters the wrap ate was taken one character past the reveal, so it saw the eaten whitespace early and held that character back until the reveal had crossed the whole run: one step for a single space, eleven for a run of eleven, by which time its fade had already finished.
 - **Fixed:** Line breaks with multiple eaten white texts now get properly counted
 
 **2.0.0.0**
+
 - **Added:** Rebuilt on the Construct addon SDK v2. Same addon id, same actions, conditions, expressions and properties, so it drops into existing projects.
 - **Added:** Typewriter easing now accepts any easing made in the project's easings editor, looked up by name. Use the Custom Easing property or the "Set Typewriter Easing (by name)" action.
 - **Added:** Typewriter state now shows up in the debugger.
