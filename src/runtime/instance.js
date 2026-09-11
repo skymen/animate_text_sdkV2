@@ -82,6 +82,8 @@ export default function (parentClass) {
 
       this.linkedDictionnaryUID = -1;
       this.linkedDictionnary = undefined;
+      this.linkedJSON = undefined;
+      this._linkedJSONData = undefined;
       this.parsedText = [];
       this.typewriterTagData = [];
       this.AnimFunctions = {};
@@ -266,6 +268,10 @@ export default function (parentClass) {
     }
 
     _tick2() {
+      // getJsonDataCopy() is the only way to read a JSON object and it deep
+      // copies, so [text=] tags reading from one share a copy per tick.
+      this._linkedJSONData = undefined;
+
       if (!this.isSupportedHost()) {
         console.warn(
           "[Animate Text] This behavior only works on Text and Sprite Font " +
@@ -735,7 +741,7 @@ export default function (parentClass) {
       var tagParam = false;
       var self2 = this;
 
-      if (typeof this.linkedDictionnary !== "undefined") {
+      if (this.linkedDictionnary || this.linkedJSON) {
         this.replaceVars();
       }
 
@@ -867,16 +873,97 @@ export default function (parentClass) {
     }
 
     getChar(name, i, fn) {
-      name = name.toLowerCase();
       if (fn) {
-        let str = this.callProjectFunction(name) || "";
+        let str = this.callProjectFunction(name.toLowerCase()) || "";
         return i < str.length ? str[i] : " ";
       }
-      if (this.linkedDictionnary && this.linkedDictionnary.has(name)) {
-        let val = this.linkedDictionnary.get(name);
-        return i < val.length ? val[i] : " ";
+      let val = this.getVar(name);
+      if (val === undefined) return " ";
+      return i < val.length ? val[i] : " ";
+    }
+
+    LinkDataInstance(inst) {
+      this.linkedDictionnary = undefined;
+      this.linkedJSON = undefined;
+      this._linkedJSONData = undefined;
+      this.linkedDictionnaryUID = -1;
+      if (!inst) return;
+      if (typeof inst.getDataMap === "function") {
+        this.linkedDictionnary = inst.getDataMap();
+      } else if (typeof inst.getJsonDataCopy === "function") {
+        this.linkedJSON = inst;
+      } else {
+        return;
       }
-      return " ";
+      this.linkedDictionnaryUID = inst.uid;
+    }
+
+    getLinkedJSONData() {
+      if (!this.linkedJSON) return undefined;
+      if (this._linkedJSONData === undefined) {
+        this._linkedJSONData = this.linkedJSON.getJsonDataCopy();
+      }
+      return this._linkedJSONData;
+    }
+
+    // Same path format as the JSON plugin: dot separated, array indices as
+    // numbers, backslash escapes a dot in a key. e.g. player.skills.0.name
+    getJSONValueAtPath(data, path) {
+      const parts = [];
+      let cur = "";
+      let escaped = false;
+      for (const ch of path) {
+        if (escaped) {
+          cur += ch;
+          escaped = false;
+        } else if (ch === "\\") {
+          escaped = true;
+        } else if (ch === ".") {
+          parts.push(cur);
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      if (cur.length || parts.length) parts.push(cur);
+
+      let val = data;
+      for (const part of parts) {
+        if (Array.isArray(val)) {
+          const idx = parseInt(part, 10);
+          if (!isFinite(idx) || idx < 0 || idx >= val.length) return undefined;
+          val = val[idx];
+        } else if (
+          typeof val === "object" &&
+          val !== null &&
+          Object.prototype.hasOwnProperty.call(val, part)
+        ) {
+          val = val[part];
+        } else {
+          return undefined;
+        }
+      }
+      return val;
+    }
+
+    // Value for a [var=] or [text=] name from the linked Dictionary or JSON,
+    // as a string, or undefined when there is nothing under that name.
+    getVar(name) {
+      name = name.trim();
+      if (this.linkedDictionnary) {
+        // Dictionary keys were always looked up lowercased; keep that working.
+        const key = this.linkedDictionnary.has(name) ? name : name.toLowerCase();
+        if (this.linkedDictionnary.has(key)) {
+          return String(this.linkedDictionnary.get(key));
+        }
+        return undefined;
+      }
+      if (this.linkedJSON) {
+        const val = this.getJSONValueAtPath(this.getLinkedJSONData(), name);
+        if (val === undefined || val === null) return undefined;
+        return typeof val === "object" ? JSON.stringify(val) : String(val);
+      }
+      return undefined;
     }
 
     replaceVars() {
@@ -884,19 +971,21 @@ export default function (parentClass) {
     }
 
     getVars(text) {
-      var regex = /\[(var|varfn)=([\d\w]+)\]/gi;
+      var regex = /\[(var|varfn)=([^\]]+)\]/gi;
       var match;
       while ((match = regex.exec(text)) !== null) {
         let isVar = match[1].trim().toLowerCase() === "var";
-        let varName = match[2].toLowerCase();
+        let varName = match[2];
         if (isVar) {
-          if (this.linkedDictionnary && this.linkedDictionnary.has(varName)) {
-            text = text.replace(match[0], this.linkedDictionnary.get(varName));
+          let val = this.getVar(varName);
+          if (val !== undefined) {
+            // Function replacer so "$&" and friends in the value stay literal.
+            text = text.replace(match[0], () => val);
             regex.lastIndex = 0;
           }
         } else {
-          let str = this.callProjectFunction(varName) || "";
-          text = text.replace(match[0], str);
+          let str = this.callProjectFunction(varName.toLowerCase()) || "";
+          text = text.replace(match[0], () => str);
           regex.lastIndex = 0;
         }
       }
@@ -947,6 +1036,8 @@ export default function (parentClass) {
       this.TWEasing = o.TWEasing;
       this.linkedDictionnaryUID = o.linkedDictionnaryUID;
       this.linkedDictionnary = undefined;
+      this.linkedJSON = undefined;
+      this._linkedJSONData = undefined;
       this._removeAfterLoad();
       this._onAfterLoad = () => {
         this._removeAfterLoad();
@@ -968,10 +1059,9 @@ export default function (parentClass) {
 
     applyLoadedState(o) {
       if (this.linkedDictionnaryUID != -1) {
-        const dictInst = this.runtime.getInstanceByUid(
-          this.linkedDictionnaryUID,
+        this.LinkDataInstance(
+          this.runtime.getInstanceByUid(this.linkedDictionnaryUID),
         );
-        if (dictInst) this.linkedDictionnary = dictInst.getDataMap();
       }
 
       if (o.sourceMode === "typewriter") {

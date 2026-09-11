@@ -23,5 +23,10 @@
     "added": "",
     "changed": "Save states are rebuilt on the runtime's afterload event instead of on the tick after loading, so [var=] tags resolve for anything that runs in between, such as an action on an On load complete event.\nThe typewriter does less work per typed letter, and tag parsing makes one pass instead of rescanning the text after every tag it rewrites.",
     "fixed": "The LastLetter expression returned nothing for text pulled in by [text=] or [fn=] when the value contained a [.\nA tag value containing $ & froze the game, and $`, $' and $$ corrupted the value.\nTypewriter parameter values containing a space were joined back together with commas, so 'value color rgb(255, 0, 0)' became rgb(255,,0,,0). Single word values, which is everything the parameter is documented to take, were unaffected.\nThe C2 converter recognises the colour name indianred again."
+  },
+  "2.2.0.0": {
+    "added": "Link Dictionary now also accepts a JSON object. [var=] and [text=] then take a path in the JSON plugin's format, with dots between keys and numbers for array indices, e.g. [var=player.skills.0.name].",
+    "changed": "",
+    "fixed": "The Typewriter Params property and Set Typewriter Params action described a 'value [a/x/y/o]' syntax that does not exist. The description is now more accurate.\nA [var=] value containing $& or $` was inserted with those sequences interpreted instead of literally."
   }
 }

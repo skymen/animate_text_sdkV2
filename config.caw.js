@@ -81,7 +81,7 @@ export const properties = [
       interpolatable: false,
     },
     name: "Typewriter Params",
-    desc: "Separated by ';'. 'value [a/x/y/o] <number>' or 'duration [type/fade] <number>'",
+    desc: "Separated by ';'. 'value <tag> <value>' (e.g. value offsety -10; value opacity 0) or 'duration [type/fade] <seconds>'",
   },
   {
     type: PROPERTY_TYPE.COMBO,

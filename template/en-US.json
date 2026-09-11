@@ -14,7 +14,7 @@
         "properties": {
           "tw-params": {
             "name": "Typewriter Params",
-            "desc": "Separated by ';'. 'value [a/x/y/o] <number>' or 'duration [type/fade] <number>'"
+            "desc": "Separated by ';'. 'value <tag> <value>' (e.g. value offsety -10; value opacity 0) or 'duration [type/fade] <seconds>'"
           },
           "tw-easing": {
             "name": "Typewriter Easing",
@@ -73,13 +73,13 @@
         },
         "actions": {
           "link-dictionary": {
-            "list-name": "Link Dictionary",
-            "display-text": "{my}: Link dictionary {0}",
-            "description": "Link a dictionary for holding the vars",
+            "list-name": "Link Dictionary / JSON",
+            "display-text": "{my}: Link {0} for vars",
+            "description": "Link a Dictionary or JSON object for holding the vars used by [var=] and [text=] tags. With a JSON, use a dot path like player.skills.0.name",
             "params": {
               "dictionary": {
-                "name": "Dictionary",
-                "desc": "The dictionary to link for holding the vars"
+                "name": "Object",
+                "desc": "The Dictionary or JSON object to link for holding the vars"
               }
             }
           },
@@ -192,11 +192,11 @@
           "set-tw-params": {
             "list-name": "Set Typewriter Params",
             "display-text": "{my}: Set typewriter params to [b]{0}[/b]",
-            "description": "Set the typewriter params",
+            "description": "Set the typewriter params: the starting values letters fade in from, the delay between letters and how long each fade takes",
             "params": {
               "params": {
                 "name": "Params",
-                "desc": "Separated by ';'. 'value [a/x/y/o] <number>' or 'duration [type/fade] <number>'"
+                "desc": "Separated by ';'. 'value <tag> <value>' (e.g. value offsety -10; value opacity 0) or 'duration [type/fade] <seconds>'"
               }
             }
           },

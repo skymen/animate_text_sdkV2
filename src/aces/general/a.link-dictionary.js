@@ -3,16 +3,17 @@ export const config = {
   highlight: false,
   isDeprecated: false,
   isAsync: false,
-  listName: "Link Dictionary",
-  displayText: "{my}: Link dictionary {0}",
-  description: "Link a dictionary for holding the vars",
+  listName: "Link Dictionary / JSON",
+  displayText: "{my}: Link {0} for vars",
+  description:
+    "Link a Dictionary or JSON object for holding the vars used by [var=] and [text=] tags. With a JSON, use a dot path like player.skills.0.name",
   params: [
     {
       id: "dictionary",
-      name: "Dictionary",
-      desc: "The dictionary to link for holding the vars",
+      name: "Object",
+      desc: "The Dictionary or JSON object to link for holding the vars",
       type: "object",
-      allowedPluginIds: ["Dictionary"],
+      allowedPluginIds: ["Dictionary", "JSON"],
     },
   ],
 };
@@ -23,7 +24,5 @@ export default function (dictionary) {
   const inst = dictionary.getFirstInstance
     ? dictionary.getFirstInstance()
     : dictionary;
-  if (!inst) return;
-  this.linkedDictionnary = inst.getDataMap();
-  this.linkedDictionnaryUID = inst.uid;
+  this.LinkDataInstance(inst);
 }

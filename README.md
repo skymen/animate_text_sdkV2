@@ -1,19 +1,16 @@
 <img src="./examples/cover.png" width="150" /><br>
 # Animate Text
 <i>A behavior that extends the animation capabilities of Spritefont and text</i> <br>
-### Version 2.1.1.0
+### Version 2.2.0.0
 
-[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.1.1.0.c3addon/skymen_Skymen_SpritefontDX-2.1.1.0.c3addon)
+[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.2.0.0.c3addon/skymen_Skymen_SpritefontDX-2.2.0.0.c3addon)
 <br>
 <sub> [See all releases](https://github.com/skymen/animate_text_sdkV2/releases) </sub> <br>
 
-#### What's New in 2.1.1.0
-- **Changed:** Save states are rebuilt on the runtime's afterload event instead of on the tick after loading, so [var=] tags resolve for anything that runs in between, such as an action on an On load complete event.
-- **Changed:** The typewriter does less work per typed letter, and tag parsing makes one pass instead of rescanning the text after every tag it rewrites.
-- **Fixed:** The LastLetter expression returned nothing for text pulled in by [text=] or [fn=] when the value contained a [.
-- **Fixed:** A tag value containing $ & froze the game, and $`, $' and $$ corrupted the value.
-- **Fixed:** Typewriter parameter values containing a space were joined back together with commas, so 'value color rgb(255, 0, 0)' became rgb(255,,0,,0). Single word values, which is everything the parameter is documented to take, were unaffected.
-- **Fixed:** The C2 converter recognises the colour name indianred again.
+#### What's New in 2.2.0.0
+- **Added:** Link Dictionary now also accepts a JSON object. [var=] and [text=] then take a path in the JSON plugin's format, with dots between keys and numbers for array indices, e.g. [var=player.skills.0.name].
+- **Fixed:** The Typewriter Params property and Set Typewriter Params action described a 'value [a/x/y/o]' syntax that does not exist. The description is now more accurate.
+- **Fixed:** A [var=] value containing $& or $` was inserted with those sequences interpreted instead of literally.
 
 <sub>[View full changelog](#changelog)</sub>
 
@@ -57,7 +54,7 @@ npm run dev
 ## Properties
 | Property Name | Description | Type |
 | --- | --- | --- |
-| Typewriter Params | Separated by ';'. 'value [a/x/y/o] <number>' or 'duration [type/fade] <number>' | longtext |
+| Typewriter Params | Separated by ';'. 'value <tag> <value>' (e.g. value offsety -10; value opacity 0) or 'duration [type/fade] <seconds>' | longtext |
 | Typewriter Easing | The interpolation method used to ease the fading | combo |
 | Custom Easing | Set an easing by name, or use Easings created using C3's easings editor | text |
 | Default Aliases | If checked, the behavior will automatically add default alias functions (wave, shake, swing) | check |
@@ -67,14 +64,14 @@ npm run dev
 ## Actions
 | Action | Description | Params
 | --- | --- | --- |
-| Link Dictionary | Link a dictionary for holding the vars | Dictionary             *(object)* <br> |
+| Link Dictionary / JSON | Link a Dictionary or JSON object for holding the vars used by [var=] and [text=] tags. With a JSON, use a dot path like player.skills.0.name | Object             *(object)* <br> |
 | Set Function Animation alias | Set a function animation alias | Name             *(string)* <br>Params             *(string)* <br>Body             *(string)* <br> |
 | Set Text | Set the text, after parsing it | Text             *(string)* <br> |
 | Pause Typewriter | Pause the typewriter |  |
 | Resume Typewriter | Resume the typewriter |  |
 | Set Typewriter Easing (by name) | Set the typewriter easing (by name) | Easing             *(string)* <br> |
 | Set Typewriter Easing | Set the typewriter easing | Easing             *(combo)* <br> |
-| Set Typewriter Params | Set the typewriter params | Params             *(string)* <br> |
+| Set Typewriter Params | Set the typewriter params: the starting values letters fade in from, the delay between letters and how long each fade takes | Params             *(string)* <br> |
 | Skip Typewriter | Skip the typewriter | Mode             *(combo)* <br> |
 | Typewrite | Typewrite the text | Text             *(string)* <br> |
 
@@ -106,6 +103,11 @@ npm run dev
 
 ---
 ## Changelog
+
+**2.2.0.0**
+- **Added:** Link Dictionary now also accepts a JSON object. [var=] and [text=] then take a path in the JSON plugin's format, with dots between keys and numbers for array indices, e.g. [var=player.skills.0.name].
+- **Fixed:** The Typewriter Params property and Set Typewriter Params action described a 'value [a/x/y/o]' syntax that does not exist. The description is now more accurate.
+- **Fixed:** A [var=] value containing $& or $` was inserted with those sequences interpreted instead of literally.
 
 **2.1.1.0**
 - **Changed:** Save states are rebuilt on the runtime's afterload event instead of on the tick after loading, so [var=] tags resolve for anything that runs in between, such as an action on an On load complete event.
