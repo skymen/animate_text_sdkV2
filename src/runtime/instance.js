@@ -726,19 +726,31 @@ export default function (parentClass) {
             this.AnimFunctions[tag] = fn;
           }
         } else {
-          const ctorArgs = [
-            Function,
-            "t",
-            "i",
-            this.GetBody(tag.toLowerCase()),
-          ];
-          this.AnimFunctions[tag] = new (Function.bind.apply(
-            Function,
-            ctorArgs,
-          ))();
+          this.AnimFunctions[tag] = this.compileExpression(tag.toLowerCase());
         }
       }
       return this.AnimFunctions[tag];
+    }
+
+    // Raw expression such as "1+wave(0.5,3,0.4)". Alias functions are in scope
+    // with t and i already bound, so they compose with any math.
+    compileExpression(body) {
+      const utilNames = Object.keys(SFDXUtilsFunctions);
+      const aliasNames = Object.keys(this.aliasFunctions).filter(
+        (n) => /^[a-z_$][\w$]*$/i.test(n) && !utilNames.includes(n),
+      );
+      let code = "let { " + utilNames.join(",") + " } = globalThis.SFDXUtilsFunctions;";
+      if (aliasNames.length)
+        code += "const { " + aliasNames.join(",") + " } = __aliases(t, i);";
+      code += "return " + body + ";";
+      const fn = new Function("t", "i", "__aliases", code);
+      const aliases = this.aliasFunctions;
+      const scope = (t, i) => {
+        const o = {};
+        for (const n of aliasNames) o[n] = (...a) => aliases[n](...a, t, i);
+        return o;
+      };
+      return (t, i) => fn(t, i, scope);
     }
 
     parseText() {

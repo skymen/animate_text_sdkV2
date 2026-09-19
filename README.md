@@ -1,14 +1,14 @@
 <img src="./examples/cover.png" width="150" /><br>
 # Animate Text
 <i>A behavior that extends the animation capabilities of Spritefont and text</i> <br>
-### Version 2.2.1.0
+### Version 2.3.0.0
 
-[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.2.1.0.c3addon/skymen_Skymen_SpritefontDX-2.2.1.0.c3addon)
+[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.3.0.0.c3addon/skymen_Skymen_SpritefontDX-2.3.0.0.c3addon)
 <br>
 <sub> [See all releases](https://github.com/skymen/animate_text_sdkV2/releases) </sub> <br>
 
-#### What's New in 2.2.1.0
-- **Added:** Works on Text Glyph objects (skymen_text_glyph) the same way as on Text objects.
+#### What's New in 2.3.0.0
+- **Added:** Alias functions (wave, swing, shake and your own) can be used inside expressions, e.g. [sfdx=scale 1+wave(0.5,3,0.4)] or [sfdx=opacity 60+wave(40,9,0.6)]. Before, an alias only worked when it was the whole expression.
 
 <sub>[View full changelog](#changelog)</sub>
 
@@ -102,6 +102,9 @@ npm run dev
 
 ---
 ## Changelog
+
+**2.3.0.0**
+- **Added:** Alias functions (wave, swing, shake and your own) can be used inside expressions, e.g. [sfdx=scale 1+wave(0.5,3,0.4)] or [sfdx=opacity 60+wave(40,9,0.6)]. Before, an alias only worked when it was the whole expression.
 
 **2.2.1.0**
 - **Added:** Works on Text Glyph objects (skymen_text_glyph) the same way as on Text objects.
