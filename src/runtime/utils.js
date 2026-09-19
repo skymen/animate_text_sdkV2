@@ -129,12 +129,24 @@ export function colorToHex(color) {
   return color;
 }
 
+// The endpoints are usually constants repeated for every letter.
+const hexIntCache = new Map();
+function hexInt(s) {
+  let v = hexIntCache.get(s);
+  if (v === undefined) {
+    if (hexIntCache.size > 256) hexIntCache.clear();
+    v = parseInt(s.replace(/#/g, ""), 16);
+    hexIntCache.set(s, v);
+  }
+  return v;
+}
+
 export function lerpHexColor(a, b, amount) {
-  var ah = parseInt(a.replace(/#/g, ""), 16),
+  var ah = hexInt(a),
     ar = ah >> 16,
     ag = (ah >> 8) & 0xff,
     ab = ah & 0xff,
-    bh = parseInt(b.replace(/#/g, ""), 16),
+    bh = hexInt(b),
     br = bh >> 16,
     bg = (bh >> 8) & 0xff,
     bb = bh & 0xff,

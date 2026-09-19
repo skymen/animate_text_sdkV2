@@ -580,27 +580,20 @@ export default function (parentClass) {
       return parseFloat(text).toString() === text;
     }
 
-    GetBody(body) {
-      let utils =
-        "let { " +
-        Object.keys(SFDXUtilsFunctions).join(",") +
-        " } = globalThis.SFDXUtilsFunctions;";
-      body = utils + "return " + body + ";";
-      return body;
-    }
-
+    // Util names are bound once when the function is built, not on every
+    // call. The compiled function is called once per letter per tag per tick.
     DefineAlias(name, params, body) {
-      body = this.GetBody(body);
-      var arr = [];
-      if (params.trim() != "") {
-        params = params.split(",").map(function (s) {
-          return s.trim();
-        });
-        arr = arr.concat([Function], params, ["t", "i"], [body]);
-      } else {
-        arr = arr.concat([Function], ["t", "i"], [body]);
-      }
-      var fn = new (Function.bind.apply(Function, arr))();
+      const list = params.trim() === "" ? [] : params.split(",").map((s) => s.trim());
+      const code =
+        "const { " +
+        Object.keys(SFDXUtilsFunctions).join(",") +
+        " } = __utils; return function (" +
+        list.concat(["t", "i"]).join(",") +
+        ") { return " +
+        body +
+        "; };";
+      const fn = new Function("__utils", code)(SFDXUtilsFunctions);
+      fn.sfdxParams = list.length;
       this.aliasFunctions[name.toLowerCase().trim()] = fn;
     }
 
@@ -739,18 +732,42 @@ export default function (parentClass) {
       const aliasNames = Object.keys(this.aliasFunctions).filter(
         (n) => /^[a-z_$][\w$]*$/i.test(n) && !utilNames.includes(n),
       );
-      let code = "let { " + utilNames.join(",") + " } = globalThis.SFDXUtilsFunctions;";
-      if (aliasNames.length)
-        code += "const { " + aliasNames.join(",") + " } = __aliases(t, i);";
-      code += "return " + body + ";";
-      const fn = new Function("t", "i", "__aliases", code);
+      // Alias wrappers read t and i from a shared slot, so calling one
+      // allocates nothing. Aliases are looked up on each call so a later
+      // "Define alias" still takes effect.
+      const cur = { t: 0, i: 0 };
       const aliases = this.aliasFunctions;
-      const scope = (t, i) => {
-        const o = {};
-        for (const n of aliasNames) o[n] = (...a) => aliases[n](...a, t, i);
-        return o;
+      const scope = {};
+      for (const n of aliasNames) {
+        switch (aliases[n].sfdxParams) {
+          case 0:
+            scope[n] = () => aliases[n](cur.t, cur.i);
+            break;
+          case 1:
+            scope[n] = (a) => aliases[n](a, cur.t, cur.i);
+            break;
+          case 2:
+            scope[n] = (a, b) => aliases[n](a, b, cur.t, cur.i);
+            break;
+          case 3:
+            scope[n] = (a, b, c) => aliases[n](a, b, c, cur.t, cur.i);
+            break;
+          case 4:
+            scope[n] = (a, b, c, d) => aliases[n](a, b, c, d, cur.t, cur.i);
+            break;
+          default:
+            scope[n] = (...a) => aliases[n](...a, cur.t, cur.i);
+        }
+      }
+      let code = "const { " + utilNames.join(",") + " } = __utils;";
+      if (aliasNames.length) code += "const { " + aliasNames.join(",") + " } = __scope;";
+      code += "return function (t, i) { return " + body + "; };";
+      const fn = new Function("__utils", "__scope", code)(SFDXUtilsFunctions, scope);
+      return (t, i) => {
+        cur.t = t;
+        cur.i = i;
+        return fn(t, i);
       };
-      return (t, i) => fn(t, i, scope);
     }
 
     parseText() {

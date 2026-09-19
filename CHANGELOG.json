@@ -31,7 +31,7 @@
   },
   "2.2.1.0": {
     "added": "Works on Text Glyph objects (skymen_text_glyph) the same way as on Text objects.",
-    "changed": "",
+    "changed": "Compiled expressions and aliases bind the util functions once when built instead of on every call, and alias calls inside expressions no longer allocate. About 4x faster per letter.\nlerpHexColor caches the parsed endpoint colors.",
     "fixed": ""
   },
   "2.3.0.0": {
