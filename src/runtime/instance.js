@@ -149,8 +149,16 @@ export default function (parentClass) {
 
     isTextHost() {
       return (
-        !!self.ITextInstance && this.instance instanceof self.ITextInstance
+        (!!self.ITextInstance && this.instance instanceof self.ITextInstance) ||
+        this.isTextGlyphHost()
       );
+    }
+
+    // Text Glyph (skymen_text_glyph) exposes the same text, fontColor and
+    // sizePt surface as the built-in Text object.
+    isTextGlyphHost() {
+      const plugin = self.C3 && self.C3.Plugins && self.C3.Plugins.skymen_text_glyph;
+      return !!plugin && this.instance instanceof plugin.Instance;
     }
 
     isSpriteFontHost() {
@@ -274,8 +282,8 @@ export default function (parentClass) {
 
       if (!this.isSupportedHost()) {
         console.warn(
-          "[Animate Text] This behavior only works on Text and Sprite Font " +
-            'objects. It is doing nothing on "' +
+          "[Animate Text] This behavior only works on Text, Text Glyph and " +
+            'Sprite Font objects. It is doing nothing on "' +
             this.instance.objectType.name +
             '".',
         );
