@@ -30,7 +30,7 @@
     "fixed": "The Typewriter Params property and Set Typewriter Params action described a 'value [a/x/y/o]' syntax that does not exist. The description is now more accurate.\nA [var=] value containing   $ &   or   $ `   was inserted with those sequences interpreted instead of literally."
   },
   "2.2.1.0": {
-    "added": "Works on Text Glyph objects (skymen_text_glyph) the same way as on Text objects.\nExpressions can use abs, floor, ceil, round, min, max, sqrt, pow, clamp and pi.",
+    "added": "Works on Text Glyph objects (skymen_text_glyph) the same way as on Text objects.",
     "changed": "",
     "fixed": ""
   },
