@@ -1,14 +1,15 @@
 <img src="./examples/cover.png" width="150" /><br>
 # Animate Text
 <i>A behavior that extends the animation capabilities of Spritefont and text</i> <br>
-### Version 2.3.1.0
+### Version 2.3.2.0
 
-[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.3.1.0.c3addon/skymen_Skymen_SpritefontDX-2.3.1.0.c3addon)
+[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/animate_text_sdkV2/releases/download/skymen_Skymen_SpritefontDX-2.3.2.0.c3addon/skymen_Skymen_SpritefontDX-2.3.2.0.c3addon)
 <br>
 <sub> [See all releases](https://github.com/skymen/animate_text_sdkV2/releases) </sub> <br>
 
-#### What's New in 2.3.1.0
-- **Added:** Expressions can use abs, floor, ceil, round, min, max, sqrt, pow, clamp and pi.
+#### What's New in 2.3.2.0
+- **Changed:** Compiled expressions and aliases bind the util functions once when built instead of on every call, and alias calls inside expressions no longer allocate. About 4x faster per letter.
+- **Changed:** lerpHexColor caches the parsed endpoint colors.
 
 <sub>[View full changelog](#changelog)</sub>
 
@@ -103,6 +104,10 @@ npm run dev
 ---
 ## Changelog
 
+**2.3.2.0**
+- **Changed:** Compiled expressions and aliases bind the util functions once when built instead of on every call, and alias calls inside expressions no longer allocate. About 4x faster per letter.
+- **Changed:** lerpHexColor caches the parsed endpoint colors.
+
 **2.3.1.0**
 - **Added:** Expressions can use abs, floor, ceil, round, min, max, sqrt, pow, clamp and pi.
 
@@ -111,7 +116,6 @@ npm run dev
 
 **2.2.1.0**
 - **Added:** Works on Text Glyph objects (skymen_text_glyph) the same way as on Text objects.
-- **Added:** Expressions can use abs, floor, ceil, round, min, max, sqrt, pow, clamp and pi.
 
 **2.2.0.0**
 - **Added:** Link Dictionary now also accepts a JSON object. [var=] and [text=] then take a path in the JSON plugin's format, with dots between keys and numbers for array indices, e.g. [var=player.skills.0.name].
